@@ -1,0 +1,60 @@
+package me.pectics.kernelclaude.permission;
+
+import java.util.Set;
+
+/**
+ * 权限组
+ * <p>
+ * 一组可以复用的权限集合
+ */
+public interface Group extends PermissionHolder {
+
+    /**
+     * 获取权限组名称（唯一标识）
+     */
+    String getGroupName();
+
+    /**
+     * 获取显示名称（可选）
+     */
+    String getDisplayName();
+
+    /**
+     * 获取组权重
+     * <p>
+     * 当用户属于多个组且权限冲突时，权重高的组优先
+     */
+    int getWeight();
+
+    /**
+     * 设置组权重
+     */
+    void setWeight(int weight);
+
+    /**
+     * 继承另一权限组
+     *
+     * @param groupName 要继承的组名
+     */
+    void inherit(String groupName);
+
+    /**
+     * 取消继承另一权限组
+     *
+     * @param groupName 要取消继承的组名
+     */
+    void uninherit(String groupName);
+
+    /**
+     * 获取所有继承的组
+     */
+    Set<String> getInheritedGroups();
+
+    /**
+     * 检查是否继承了指定组（包括间接继承）
+     *
+     * @param groupName 组名
+     * @return 是否继承
+     */
+    boolean inherits(String groupName);
+}
