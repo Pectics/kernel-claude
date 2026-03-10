@@ -46,7 +46,7 @@ public interface PermissionCalculator {
      * @param contexts 上下文条件
      * @return 所有生效的权限节点
      */
-    Set<PermissionNode> getAllPermissions(User user, Set<Context> contexts);
+    Set<PermissionNode> getPermissions(User user, Set<Context> contexts);
 
     /**
      * 获取组的所有有效权限（包括继承的）
@@ -55,5 +55,5 @@ public interface PermissionCalculator {
      * @param contexts 上下文条件
      * @return 所有生效的权限节点
      */
-    Set<PermissionNode> getAllPermissions(Group group, Set<Context> contexts);
+    Set<PermissionNode> getPermissions(Group group, Set<Context> contexts);
 }
