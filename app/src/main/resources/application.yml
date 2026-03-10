@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: kernel-claude
+
+logging:
+  level:
+    me.pectics: DEBUG
+    org.springframework: INFO

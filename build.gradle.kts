@@ -1,12 +1,11 @@
 plugins {
     java
-    id("org.springframework.boot") version "4.0.3"
-    id("io.spring.dependency-management") version "1.1.7"
+    id("org.springframework.boot") version "4.0.3" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
 }
 
 group = "me.pectics"
 version = "0.0.1-SNAPSHOT"
-description = "A multi-platform intelligent agent system"
 
 java {
     toolchain {
@@ -14,30 +13,36 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
+// 所有子模块的公共配置
+subprojects {
+    apply(plugin = "java")
+
+    group = rootProject.group
+    version = rootProject.version
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
     }
-}
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
+    dependencies {
+        compileOnly("org.projectlombok:lombok:1.18.36")
+        annotationProcessor("org.projectlombok:lombok:1.18.36")
 
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    }
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
-tasks.getByName<Jar>("jar") {
-    enabled = true
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
 }
