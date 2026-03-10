@@ -1,12 +1,12 @@
 plugins {
     java
-    id("org.springframework.boot") version "4.0.3"
-    id("io.spring.dependency-management") version "1.1.7"
+    id("org.springframework.boot") version "4.0.3" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
 }
 
 group = "me.pectics"
 version = "0.0.1-SNAPSHOT"
-description = "kernel-claude"
+description = "kernel-claude - A multi-platform intelligent agent system"
 
 java {
     toolchain {
@@ -14,25 +14,22 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
+// 所有子项目的通用配置
+subprojects {
+    apply(plugin = "java")
+
+    repositories {
+        mavenCentral()
     }
-}
 
-repositories {
-    mavenCentral()
-}
+    // 通用依赖
+    dependencies {
+        // Lombok
+        "compileOnly"("org.projectlombok:lombok")
+        "annotationProcessor"("org.projectlombok:lombok")
+    }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
