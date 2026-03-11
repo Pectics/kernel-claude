@@ -16,6 +16,7 @@ java {
 // 所有子模块的公共配置
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "io.spring.dependency-management")
 
     group = rootProject.group
     version = rootProject.version
@@ -28,6 +29,12 @@ subprojects {
 
     repositories {
         mavenCentral()
+    }
+
+    configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
+        dependencies {
+            dependency("org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.1")
+        }
     }
 
     dependencies {
