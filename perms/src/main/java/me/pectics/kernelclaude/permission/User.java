@@ -10,11 +10,9 @@ import java.util.Set;
 public interface User extends PermissionHolder {
 
     /**
-     * 获取用户唯一标识
-     * <p>
-     * <i>建议使用复合标识</i>
+     * 获取用户唯一标识（复合标识）
      */
-    String getUserId();
+    String getId();
 
     /**
      * 获取显示名称
