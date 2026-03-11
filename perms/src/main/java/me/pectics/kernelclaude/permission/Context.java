@@ -48,7 +48,7 @@ public record Context(String key, String value) {
     /**
      * 从 JSON 字符串解析单个 Context
      */
-    public static @Nullable Context fromJsonSingle(@Nullable String json) {
+    public static @Nullable Context fromJsonSingle(String json) {
         if (json == null || json.isBlank())
             return null;
 
@@ -62,7 +62,7 @@ public record Context(String key, String value) {
     /**
      * 将 Context 集合转换为 JSON 数组字符串
      */
-    public static @NotNull String toJson(@Nullable Set<Context> contexts) {
+    public static @NotNull String toJson(Set<Context> contexts) {
         if (contexts == null || contexts.isEmpty())
             return "[]";
 
@@ -80,7 +80,7 @@ public record Context(String key, String value) {
     /**
      * 从 JSON 数组字符串解析 Context 集合
      */
-    public static @NotNull Set<Context> fromJson(@Nullable String json) {
+    public static @NotNull Set<Context> fromJson(String json) {
         Set<Context> contexts = new HashSet<>();
         if (json == null || json.isBlank() || json.equals("[]"))
             return contexts;
@@ -94,7 +94,7 @@ public record Context(String key, String value) {
         return contexts;
     }
 
-    private static @NotNull String escapeJson(@Nullable String str) {
+    private static @NotNull String escapeJson(String str) {
         if (str == null) return "";
         return str.replace("\\", "\\\\")
                   .replace("\"", "\\\"")
@@ -103,7 +103,7 @@ public record Context(String key, String value) {
                   .replace("\t", "\\t");
     }
 
-    private static @NotNull String unescapeJson(@Nullable String str) {
+    private static @NotNull String unescapeJson(String str) {
         if (str == null) return "";
         return str.replace("\\\"", "\"")
                   .replace("\\\\", "\\")
