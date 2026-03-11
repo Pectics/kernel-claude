@@ -13,7 +13,7 @@ public enum PermissionResult {
     /**
      * 拒绝
      */
-    DENIED,
+    REJECTED,
 
     /**
      * 未定义

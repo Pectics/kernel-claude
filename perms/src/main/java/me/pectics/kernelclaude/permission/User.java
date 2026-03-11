@@ -1,5 +1,7 @@
 package me.pectics.kernelclaude.permission;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 /**
@@ -12,22 +14,22 @@ public interface User extends PermissionHolder {
     /**
      * 获取用户唯一标识
      */
-    String getId();
+    @NotNull String getId();
 
     /**
      * 获取平台标识
      */
-    String getPlatformId();
+    @NotNull String getPlatform();
 
     /**
-     * 获取平台唯一标识
+     * 获取原生用户 ID
      */
-    String getPlatformUserId();
+    @NotNull String getNativeId();
 
     /**
      * 获取显示名称
      */
-    String getDisplayName();
+    @NotNull String getDisplayName();
 
     /**
      * 设置显示名称
@@ -39,7 +41,7 @@ public interface User extends PermissionHolder {
     /**
      * 获取用户继承的权限组
      */
-    Set<String> getGroups();
+    @NotNull Set<String> getGroups();
 
     /**
      * 将用户继承自指定权限组

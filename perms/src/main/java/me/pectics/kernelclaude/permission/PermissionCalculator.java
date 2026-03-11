@@ -1,5 +1,7 @@
 package me.pectics.kernelclaude.permission;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 /**
@@ -26,16 +28,16 @@ public interface PermissionCalculator {
      * @param contexts 上下文条件
      * @return 权限检查结果
      */
-    PermissionResult check(User user, String key, Set<Context> contexts);
+    @NotNull PermissionResult check(User user, String key, Set<Context> contexts);
 
     /**
-     * 检查用户是否拥有指定权限（无上下文）
+     * 检查用户是否拥有指定权限
      *
      * @param user 用户
      * @param key  权限键
      * @return 权限检查结果
      */
-    default PermissionResult check(User user, String key) {
+    default @NotNull PermissionResult check(User user, String key) {
         return check(user, key, Set.of());
     }
 
@@ -46,7 +48,17 @@ public interface PermissionCalculator {
      * @param contexts 上下文条件
      * @return 所有生效的权限节点
      */
-    Set<PermissionNode> getPermissions(User user, Set<Context> contexts);
+    @NotNull Set<PermissionNode> getPermissions(User user, Set<Context> contexts);
+
+    /**
+     * 获取用户的所有有效权限
+     *
+     * @param user 用户
+     * @return 所有生效的权限节点
+     */
+    default @NotNull Set<PermissionNode> getPermissions(User user) {
+        return getPermissions(user, Set.of());
+    }
 
     /**
      * 获取组的所有有效权限（包括继承的）
@@ -55,5 +67,16 @@ public interface PermissionCalculator {
      * @param contexts 上下文条件
      * @return 所有生效的权限节点
      */
-    Set<PermissionNode> getPermissions(Group group, Set<Context> contexts);
+    @NotNull Set<PermissionNode> getPermissions(Group group, Set<Context> contexts);
+
+    /**
+     * 获取组的所有有效权限（包括继承的）
+     *
+     * @param group 权限组
+     * @return 所有生效的权限节点
+     */
+    default @NotNull Set<PermissionNode> getPermissions(Group group) {
+        return getPermissions(group, Set.of());
+    }
+
 }

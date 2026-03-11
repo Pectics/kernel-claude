@@ -3,6 +3,8 @@ package me.pectics.kernelclaude.permission;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * 权限组管理器
  */
@@ -14,7 +16,7 @@ public interface GroupManager {
      * @param groupId 权限组 ID
      * @return 权限组对象，不存在则返回 null
      */
-    @Nullable Group getGroup(String groupId);
+    @NotNull Optional<Group> getGroup(String groupId);
 
     /**
      * 新增权限组
@@ -59,10 +61,7 @@ public interface GroupManager {
      * @return 权限组对象（如果存在则返回现有权限组，否则创建新权限组）
      */
     default @NotNull Group getOrCreateGroup(String groupId, int weight, String displayName) {
-        Group group = getGroup(groupId);
-        if (group != null)
-            return group;
-        return createGroup(groupId, weight, displayName);
+        return getGroup(groupId).orElseGet(() -> createGroup(groupId, weight, displayName));
     }
 
     /**

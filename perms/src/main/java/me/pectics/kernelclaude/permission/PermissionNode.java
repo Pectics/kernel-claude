@@ -1,11 +1,11 @@
 package me.pectics.kernelclaude.permission;
 
-import lombok.NonNull;
-import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * 权限节点
@@ -30,14 +30,16 @@ public record PermissionNode(
 ) {
 
     // 权限键格式：小写字母、数字、下划线，分段由点分隔，支持末尾通配符
-    private static final @RegExp String KEY_PATTERN = "^[a-z0-9_]+(?:\\.[a-z0-9_]+)*(\\.\\*)?$";
+    private static final Pattern KEY_PATTERN = Pattern.compile("^[a-z0-9_]+(?:\\.[a-z0-9_]+)*(?:\\.\\*)?$");
 
     /**
      * 创建一个权限节点
      */
     @Contract("_, _ -> new")
-    public static @NonNull PermissionNode of(@NonNull String key, boolean value) {
-        if (!key.matches(KEY_PATTERN))
+    public static @NotNull PermissionNode of(String key, boolean value) {
+        if (key == null || key.isEmpty())
+            throw new IllegalArgumentException("Permission key cannot be null or empty");
+        if (!KEY_PATTERN.matcher(key).matches())
             throw new IllegalArgumentException("Invalid permission key: " + key);
         return new PermissionNode(key, value, Set.of(), 0L);
     }
@@ -46,7 +48,7 @@ public record PermissionNode(
      * 创建允许权限
      */
     @Contract("_ -> new")
-    public static @NonNull PermissionNode allow(@NonNull String key) {
+    public static @NotNull PermissionNode allow(String key) {
         return of(key, true);
     }
 
@@ -54,7 +56,7 @@ public record PermissionNode(
      * 创建拒绝权限
      */
     @Contract("_ -> new")
-    public static @NonNull PermissionNode deny(@NonNull String key) {
+    public static @NotNull PermissionNode deny(String key) {
         return of(key, false);
     }
 
@@ -67,14 +69,17 @@ public record PermissionNode(
     }
 
     /**
-     * 检查是否在指定上下文中生效
+     * 上下文检查
      *
      * @param contexts 查询上下文
      * @return 是否匹配
      */
-    public boolean matchesContext(Set<Context> contexts) {
-        // 无上下文限制，始终生效
+    public boolean matches(Set<Context> contexts) {
+        // 无上下文条件，始终生效
         if (this.contexts.isEmpty()) return true;
+
+        // 查询上下文为空，无法满足条件
+        if (contexts.isEmpty()) return false;
 
         // 检查所有必需的上下文是否满足
         for (Context required : this.contexts) {
@@ -93,26 +98,26 @@ public record PermissionNode(
     /**
      * 获取过期时间的 Optional
      */
-    public OptionalLong getUntil() {
+    public @NotNull OptionalLong getUntil() {
         return until == 0 ? OptionalLong.empty() : OptionalLong.of(until);
     }
 
     /**
-     * 通配符匹配
+     * 权限键匹配，支持通配符
      * <p>
      * {@code telegram.message.send} → 精确匹配<br>
      * {@code telegram.message.*} → 匹配 {@code telegram.message} 下所有<br>
      * {@code telegram.*} → 匹配 {@code telegram} 下所有<br>
      * {@code *} → 匹配所有
      */
-    public boolean matchesKey(String queryKey) {
-        if (key.equals(queryKey)) return true;
-        if (key.equals("*")) return true;
+    public boolean matches(String key) {
+        if (this.key.equals(key)) return true;
+        if (this.key.equals("*")) return true;
 
         // 通配符匹配
-        if (key.endsWith("*")) {
-            String prefix = key.substring(0, key.length() - 1);
-            return queryKey.startsWith(prefix);
+        if (this.key.endsWith("*")) {
+            String prefix = this.key.substring(0, this.key.length() - 1);
+            return key.startsWith(prefix);
         }
 
         return false;

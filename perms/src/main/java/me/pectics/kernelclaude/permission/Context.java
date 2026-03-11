@@ -1,6 +1,5 @@
 package me.pectics.kernelclaude.permission;
 
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +28,8 @@ public record Context(String key, String value) {
     /**
      * 检查两个上下文是否匹配
      */
-    public boolean matches(@NonNull Context other) {
-        if (!this.key.equals(other.key)) return false;
+    public boolean matches(Context other) {
+        if (other == null || !this.key.equals(other.key)) return false;
 
         // 支持通配符值
         if (this.value.equals("*") || other.value.equals("*")) return true;

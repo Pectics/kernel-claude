@@ -1,5 +1,7 @@
 package me.pectics.kernelclaude.permission;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,16 +16,16 @@ public interface GroupRepository {
      * 根据权限组 ID 查找权限组
      *
      * @param groupId 权限组 ID
-     * @return 权限组对象
+     * @return 权限组对象，不存在则返回 empty
      */
-    Optional<Group> findById(String groupId);
+    @NotNull Optional<Group> findById(String groupId);
 
     /**
      * 查找所有权限组
      *
      * @return 权限组对象集合
      */
-    Set<Group> findAll();
+    @NotNull Set<Group> findAll();
 
     /**
      * 查找指定权限组的所有继承的权限组 ID
@@ -31,7 +33,7 @@ public interface GroupRepository {
      * @param groupId 权限组 ID
      * @return 继承的权限组 ID 集合
      */
-    Set<String> findInheritedGroupIds(String groupId);
+    @NotNull Set<String> findSuperIds(String groupId);
 
     /**
      * 保存权限组（新增或更新）
@@ -39,7 +41,7 @@ public interface GroupRepository {
      * @param group 权限组对象
      * @return 保存后的权限组对象
      */
-    Group save(Group group);
+    @NotNull Group save(Group group);
 
     /**
      * 删除权限组

@@ -1,5 +1,7 @@
 package me.pectics.kernelclaude.permission;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -11,29 +13,29 @@ import java.util.Set;
 public interface UserRepository {
 
     /**
-     * 根据平台标识和平台用户 ID 查找用户
-     *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
-     * @return 用户对象，不存在则返回 empty
-     */
-    Optional<User> findByPlatformIdAndUserId(String platformId, String userId);
-
-    /**
      * 根据用户 ID 查找用户
      *
      * @param id 用户 ID
-     * @return 用户对象
+     * @return 用户对象，不存在则返回 empty
      */
-    Optional<User> findById(String id);
+    @NotNull Optional<User> findById(String id);
+
+    /**
+     * 根据平台标识和平台用户 ID 查找用户
+     *
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
+     * @return 用户对象，不存在则返回 empty
+     */
+    @NotNull Optional<User> findByPlatformAndNativeId(String platform, String nativeId);
 
     /**
      * 查找指定平台下的所有用户
      *
-     * @param platformId 平台标识
+     * @param platform 平台标识
      * @return 用户集合
      */
-    Set<User> findByPlatformId(String platformId);
+    @NotNull Set<User> findByPlatform(String platform);
 
     /**
      * 查找属于指定权限组的所有用户
@@ -41,7 +43,7 @@ public interface UserRepository {
      * @param groupId 权限组 ID
      * @return 用户集合
      */
-    Set<User> findByGroupId(String groupId);
+    @NotNull Set<User> findByGroupId(String groupId);
 
     /**
      * 保存用户（新增或更新）
@@ -54,17 +56,17 @@ public interface UserRepository {
     /**
      * 删除用户
      *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
      */
-    void delete(String platformId, String userId);
+    void delete(String platform, String nativeId);
 
     /**
      * 检查用户是否存在
      *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
      * @return 是否存在
      */
-    boolean exists(String platformId, String userId);
+    boolean exists(String platform, String nativeId);
 }

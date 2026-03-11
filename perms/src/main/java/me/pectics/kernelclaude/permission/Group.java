@@ -1,5 +1,7 @@
 package me.pectics.kernelclaude.permission;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 /**
@@ -12,12 +14,12 @@ public interface Group extends PermissionHolder {
     /**
      * 获取权限组唯一标识
      */
-    String getId();
+    @NotNull String getId();
 
     /**
-     * 获取显示名称（可选）
+     * 获取显示名称
      */
-    String getDisplayName();
+    @NotNull String getDisplayName();
 
     /**
      * 获取组权重
@@ -48,7 +50,7 @@ public interface Group extends PermissionHolder {
     /**
      * 获取所有继承的组
      */
-    Set<String> getInheritedGroups();
+    @NotNull Set<String> getSupers();
 
     /**
      * 检查是否继承了指定组（包括间接继承）

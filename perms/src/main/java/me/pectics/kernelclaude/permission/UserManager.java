@@ -1,9 +1,9 @@
 package me.pectics.kernelclaude.permission;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * 用户管理器
@@ -14,26 +14,26 @@ public interface UserManager {
      * 使用用户 ID 获取用户
      *
      * @param id 用户 ID
-     * @return 用户对象，不存在则返回 null
+     * @return 用户对象，不存在则返回 empty
      */
-    @Nullable User getUser(String id);
+    @NotNull Optional<User> getUser(String id);
 
     /**
-     * 使用平台标识和平台用户 ID 获取用户
+     * 使用平台和原生用户 ID 获取用户
      *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
-     * @return 用户对象，不存在则返回 null
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
+     * @return 用户对象，不存在则返回 empty
      */
-    @Nullable User getUser(String platformId, String userId);
+    @NotNull Optional<User> getUser(String platform, String nativeId);
 
     /**
      * 获取指定平台下的所有用户
      *
-     * @param platformId 平台标识
+     * @param platform 平台标识
      * @return 用户集合
      */
-    @NotNull Collection<User> getUsersByPlatform(String platformId);
+    @NotNull Collection<User> getUsersByPlatform(String platform);
 
     /**
      * 获取属于指定权限组的所有用户
@@ -46,25 +46,22 @@ public interface UserManager {
     /**
      * 创建用户
      *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
      * @return 新创建的用户
      * @throws IllegalArgumentException 如果用户名已存在
      */
-    @NotNull User createUser(String platformId, String userId);
+    @NotNull User createUser(String platform, String nativeId);
 
     /**
      * 获取或创建用户
      *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
      * @return 用户对象（如果存在则返回现有用户，否则创建新用户）
      */
-    default @NotNull User getOrCreateUser(String platformId, String userId) {
-        User user = getUser(platformId, userId);
-        if (user != null)
-            return user;
-        return createUser(platformId, userId);
+    default @NotNull User getOrCreateUser(String platform, String nativeId) {
+        return getUser(platform, nativeId).orElseGet(() -> createUser(platform, nativeId));
     }
 
     /**
@@ -76,13 +73,13 @@ public interface UserManager {
     boolean deleteUser(String id);
 
     /**
-     * 使用平台标识和平台用户 ID 删除用户
+     * 使用平台标识和原生用户 ID 删除用户
      *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
      * @return 是否成功
      */
-    boolean deleteUser(String platformId, String userId);
+    boolean deleteUser(String platform, String nativeId);
 
     /**
      * 使用用户 ID 检查用户是否存在
@@ -93,11 +90,11 @@ public interface UserManager {
     boolean hasUser(String id);
 
     /**
-     * 使用平台标识和平台用户 ID 检查用户是否存在
+     * 使用平台标识和原生用户 ID 检查用户是否存在
      *
-     * @param platformId 平台标识
-     * @param userId     平台用户 ID
+     * @param platform 平台标识
+     * @param nativeId 原生用户 ID
      * @return 是否存在
      */
-    boolean hasUser(String platformId, String userId);
+    boolean hasUser(String platform, String nativeId);
 }

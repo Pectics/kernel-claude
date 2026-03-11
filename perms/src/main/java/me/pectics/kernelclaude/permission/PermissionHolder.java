@@ -1,5 +1,7 @@
 package me.pectics.kernelclaude.permission;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 /**
@@ -14,42 +16,56 @@ public interface PermissionHolder {
     /**
      * 获取唯一标识
      */
-    String getId();
+    @NotNull String getId();
 
     /**
      * 获取所有直接权限节点
+     *
+     * @return 权限节点集合
      */
-    Set<PermissionNode> getPermissionNodes();
+    @NotNull Set<PermissionNode> getPermissionNodes();
 
     /**
      * 添加直接权限节点
+     *
+     * @param node 权限节点
      */
     void addPermissionNode(PermissionNode node);
 
     /**
      * 移除直接权限节点
+     *
+     * @param key 权限键
      */
     void removePermissionNode(String key);
 
     /**
      * 获取继承权限组
+     *
+     * @return 继承权限组集合
      */
-    Set<Group> getParentGroups();
+    @NotNull Set<Group> getSuperGroups();
 
     /**
      * 添加继承权限组
+     *
+     * @param groupId 权限组 ID
      */
-    void addParentGroup(String groupId);
+    void addSuperGroup(String groupId);
 
     /**
      * 取消继承权限组
+     *
+     * @param groupId 权限组 ID
      */
-    void removeParentGroup(String groupId);
+    void removeSuperGroup(String groupId);
 
     /**
      * 获取权重（用于冲突解决）
      * <p>
      * 权重越高，优先级越高
+     *
+     * @return 权重值
      */
     int getWeight();
 
@@ -63,7 +79,7 @@ public interface PermissionHolder {
      *
      * @param key      权限键
      * @param contexts 当前上下文
-     * @return 权限结果
+     * @return 权限检查结果
      */
-    PermissionResult checkPermission(String key, Set<Context> contexts);
+    @NotNull PermissionResult checkPermission(String key, Set<Context> contexts);
 }
