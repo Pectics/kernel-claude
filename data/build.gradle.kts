@@ -8,6 +8,7 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter")
 
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter")
+    implementation("com.github.ben-manes.caffeine:caffeine")
 
     runtimeOnly("com.mysql:mysql-connector-j")
 

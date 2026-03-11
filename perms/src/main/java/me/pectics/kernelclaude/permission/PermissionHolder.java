@@ -1,8 +1,13 @@
 package me.pectics.kernelclaude.permission;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.Set;
+
+import static me.pectics.kernelclaude.permission.PermissionResult.GRANTED;
+import static me.pectics.kernelclaude.permission.PermissionResult.REJECTED;
 
 /**
  * 权限持有者接口
@@ -12,6 +17,14 @@ import java.util.Set;
  * 设计参考：LuckPerms 的 PermissionHolder 设计
  */
 public interface PermissionHolder {
+
+    /**
+     * 权限持有者类型
+     */
+    enum Type {
+        USER, // 用户
+        GROUP // 权限组
+    }
 
     /**
      * 获取唯一标识
@@ -30,56 +43,78 @@ public interface PermissionHolder {
      *
      * @param node 权限节点
      */
-    void addPermissionNode(PermissionNode node);
+    void addPermissionNode(@NotNull PermissionNode node);
 
     /**
      * 移除直接权限节点
      *
      * @param key 权限键
      */
-    void removePermissionNode(String key);
+    void removePermissionNode(@NotNull String key);
 
     /**
-     * 获取继承权限组
+     * 获取继承的权限组
      *
-     * @return 继承权限组集合
+     * @return 继承的权限组集合
      */
     @NotNull Set<Group> getSuperGroups();
 
     /**
-     * 添加继承权限组
+     * 添加继承的权限组
      *
      * @param groupId 权限组 ID
      */
-    void addSuperGroup(String groupId);
+    void addSuperGroup(@NotNull String groupId);
 
     /**
      * 取消继承权限组
      *
      * @param groupId 权限组 ID
      */
-    void removeSuperGroup(String groupId);
+    void removeSuperGroup(@NotNull String groupId);
 
     /**
-     * 获取权重（用于冲突解决）
-     * <p>
-     * 权重越高，优先级越高
+     * 检查是否继承指定权限组
      *
-     * @return 权重值
+     * @param groupId 要检查的权限组 ID
+     * @return 是否继承
      */
-    int getWeight();
+    boolean hasSuperGroup(@NotNull String groupId);
 
     /**
      * 检查是否拥有指定权限
      * <p>
      * 权限检查顺序：<br>
      * 1. 检查直接权限<br>
-     * 2. 检查继承的组权限（递归）<br>
-     * 3. 考虑上下文条件
+     * 2. 检查继承的组权限（递归）
      *
      * @param key      权限键
      * @param contexts 当前上下文
      * @return 权限检查结果
      */
-    @NotNull PermissionResult checkPermission(String key, Set<Context> contexts);
+    default @NotNull PermissionResult checkPermission(String key, Set<Context> contexts) {
+        if (key == null || key.isEmpty())
+            return PermissionResult.UNDEFINED;
+
+        // 1. 检查直接权限
+        for (PermissionNode node : getPermissionNodes()) {
+            if (!node.matches(key)) continue;
+            if (!node.matches(contexts)) continue;
+            if (node.isExpired()) continue;
+            return node.value() ? GRANTED : REJECTED;
+        }
+
+        // 2. 检查继承的组权限（递归）
+        val groups = getSuperGroups().stream()
+                .sorted(Comparator.comparingInt(Group::getWeight).reversed()) // 权重高的组优先检查
+                .toList();
+        for (Group group : groups) {
+            val result = group.checkPermission(key, contexts);
+            if (result != PermissionResult.UNDEFINED)
+                return result;
+        }
+
+        // 3. 没有明确的权限设置，返回 UNDEFINED
+        return PermissionResult.UNDEFINED;
+    }
 }

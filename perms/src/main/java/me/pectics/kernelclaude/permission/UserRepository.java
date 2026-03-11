@@ -18,16 +18,7 @@ public interface UserRepository {
      * @param id 用户 ID
      * @return 用户对象，不存在则返回 empty
      */
-    @NotNull Optional<User> findById(String id);
-
-    /**
-     * 根据平台标识和平台用户 ID 查找用户
-     *
-     * @param platform 平台标识
-     * @param nativeId 原生用户 ID
-     * @return 用户对象，不存在则返回 empty
-     */
-    @NotNull Optional<User> findByPlatformAndNativeId(String platform, String nativeId);
+    @NotNull Optional<User> find(String id);
 
     /**
      * 查找指定平台下的所有用户
@@ -43,7 +34,7 @@ public interface UserRepository {
      * @param groupId 权限组 ID
      * @return 用户集合
      */
-    @NotNull Set<User> findByGroupId(String groupId);
+    @NotNull Set<User> findByGroup(String groupId);
 
     /**
      * 保存用户（新增或更新）
@@ -51,22 +42,20 @@ public interface UserRepository {
      * @param user 用户对象
      * @return 保存后的用户
      */
-    User save(User user);
+    @NotNull User save(User user);
 
     /**
      * 删除用户
      *
-     * @param platform 平台标识
-     * @param nativeId 原生用户 ID
+     * @param id 用户 ID
      */
-    void delete(String platform, String nativeId);
+    void delete(String id);
 
     /**
      * 检查用户是否存在
      *
-     * @param platform 平台标识
-     * @param nativeId 原生用户 ID
+     * @param id 用户 ID
      * @return 是否存在
      */
-    boolean exists(String platform, String nativeId);
+    boolean exists(String id);
 }
