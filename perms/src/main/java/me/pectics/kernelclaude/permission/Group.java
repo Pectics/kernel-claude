@@ -10,9 +10,9 @@ import java.util.Set;
 public interface Group extends PermissionHolder {
 
     /**
-     * 获取权限组名称（唯一标识）
+     * 获取权限组唯一标识
      */
-    String getGroupName();
+    String getGroupId();
 
     /**
      * 获取显示名称（可选）
