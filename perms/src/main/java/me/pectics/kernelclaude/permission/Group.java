@@ -34,16 +34,16 @@ public interface Group extends PermissionHolder {
     /**
      * 继承另一权限组
      *
-     * @param groupName 要继承的组名
+     * @param groupId 要继承的权限组 ID
      */
-    void inherit(String groupName);
+    void inherit(String groupId);
 
     /**
      * 取消继承另一权限组
      *
-     * @param groupName 要取消继承的组名
+     * @param groupId 要取消继承的权限组 ID
      */
-    void uninherit(String groupName);
+    void uninherit(String groupId);
 
     /**
      * 获取所有继承的组
@@ -53,8 +53,8 @@ public interface Group extends PermissionHolder {
     /**
      * 检查是否继承了指定组（包括间接继承）
      *
-     * @param groupName 组名
+     * @param groupId 要检查的权限组 ID
      * @return 是否继承
      */
-    boolean inherits(String groupName);
+    boolean inherits(String groupId);
 }

@@ -44,22 +44,22 @@ public interface User extends PermissionHolder {
     /**
      * 将用户继承自指定权限组
      *
-     * @param groupName 组名
+     * @param groupId 权限组 ID
      */
-    void inherit(String groupName);
+    void inherit(String groupId);
 
     /**
      * 将用户取消继承指定权限组
      *
-     * @param groupName 组名
+     * @param groupId 权限组 ID
      */
-    void uninherit(String groupName);
+    void uninherit(String groupId);
 
     /**
      * 检查用户是否继承指定权限组（包括间接继承）
      *
-     * @param groupName 组名
+     * @param groupId 要检查的权限组 ID
      * @return 是否继承
      */
-    boolean inherits(String groupName);
+    boolean inherits(String groupId);
 }
