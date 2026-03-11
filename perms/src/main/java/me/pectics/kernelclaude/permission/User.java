@@ -15,6 +15,16 @@ public interface User extends PermissionHolder {
     String getId();
 
     /**
+     * 获取平台标识
+     */
+    String getPlatformId();
+
+    /**
+     * 获取平台唯一标识
+     */
+    String getPlatformUserId();
+
+    /**
      * 获取显示名称
      */
     String getDisplayName();
