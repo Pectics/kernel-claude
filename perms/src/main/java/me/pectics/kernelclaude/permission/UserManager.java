@@ -1,5 +1,6 @@
 package me.pectics.kernelclaude.permission;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -10,58 +11,93 @@ import java.util.Collection;
 public interface UserManager {
 
     /**
-     * 获取用户
+     * 使用用户 ID 获取用户
      *
-     * @param username 用户名
-     * @return 用户，不存在则返回 null
+     * @param id 用户 ID
+     * @return 用户对象，不存在则返回 null
      */
-    @Nullable
-    User getUser(String username);
+    @Nullable User getUser(String id);
+
+    /**
+     * 使用平台标识和平台用户 ID 获取用户
+     *
+     * @param platformId 平台标识
+     * @param userId     平台用户 ID
+     * @return 用户对象，不存在则返回 null
+     */
+    @Nullable User getUser(String platformId, String userId);
+
+    /**
+     * 获取指定平台下的所有用户
+     *
+     * @param platformId 平台标识
+     * @return 用户集合
+     */
+    @NotNull Collection<User> getUsersByPlatform(String platformId);
+
+    /**
+     * 获取属于指定权限组的所有用户
+     *
+     * @param groupId 权限组 ID
+     * @return 用户集合
+     */
+    @NotNull Collection<User> getUsersByGroup(String groupId);
 
     /**
      * 创建用户
      *
-     * @param username 用户名
+     * @param platformId 平台标识
+     * @param userId     平台用户 ID
      * @return 新创建的用户
      * @throws IllegalArgumentException 如果用户名已存在
      */
-    User createUser(String username);
+    @NotNull User createUser(String platformId, String userId);
 
     /**
      * 获取或创建用户
      *
-     * @param username 用户名
-     * @return 用户（如果存在则返回现有用户，否则创建新用户）
+     * @param platformId 平台标识
+     * @param userId     平台用户 ID
+     * @return 用户对象（如果存在则返回现有用户，否则创建新用户）
      */
-    User getOrCreateUser(String username);
+    default @NotNull User getOrCreateUser(String platformId, String userId) {
+        User user = getUser(platformId, userId);
+        if (user != null)
+            return user;
+        return createUser(platformId, userId);
+    }
 
     /**
-     * 删除用户
+     * 使用用户 ID 删除用户
      *
-     * @param username 用户名
+     * @param id 用户 ID
      * @return 是否成功
      */
-    boolean deleteUser(String username);
+    boolean deleteUser(String id);
 
     /**
-     * 检查用户是否存在
+     * 使用平台标识和平台用户 ID 删除用户
      *
-     * @param username 用户名
+     * @param platformId 平台标识
+     * @param userId     平台用户 ID
+     * @return 是否成功
+     */
+    boolean deleteUser(String platformId, String userId);
+
+    /**
+     * 使用用户 ID 检查用户是否存在
+     *
+     * @param id 用户 ID
      * @return 是否存在
      */
-    boolean hasUser(String username);
+    boolean hasUser(String id);
 
     /**
-     * 获取所有用户
+     * 使用平台标识和平台用户 ID 检查用户是否存在
      *
-     * @return 用户集合
+     * @param platformId 平台标识
+     * @param userId     平台用户 ID
+     * @return 是否存在
      */
-    Collection<User> getUsers();
-
-    /**
-     * 获取用户数量
-     *
-     * @return 数量
-     */
-    int getUserCount();
+    boolean hasUser(String platformId, String userId);
 }
