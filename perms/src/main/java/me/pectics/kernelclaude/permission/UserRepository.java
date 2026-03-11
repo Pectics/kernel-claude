@@ -20,9 +20,9 @@ public interface UserRepository {
     Optional<User> findByPlatformIdAndUserId(String platformId, String userId);
 
     /**
-     * 根据用户唯一复合标识查找用户
+     * 根据用户 ID 查找用户
      *
-     * @param id 复合 ID
+     * @param id 用户 ID
      * @return 用户对象
      */
     Optional<User> findById(String id);

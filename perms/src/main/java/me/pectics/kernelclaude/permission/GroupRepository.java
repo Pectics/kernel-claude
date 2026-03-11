@@ -11,7 +11,7 @@ import java.util.Set;
 public interface GroupRepository {
 
     /**
-     * 根据组名查找权限组
+     * 根据权限组 ID 查找权限组
      *
      * @param groupId 权限组 ID
      * @return 权限组对象
@@ -26,7 +26,7 @@ public interface GroupRepository {
     Set<Group> findAll();
 
     /**
-     * 查找指定组继承的所有父组
+     * 查找指定权限组的所有继承的权限组 ID
      *
      * @param groupId 权限组 ID
      * @return 继承的权限组 ID 集合

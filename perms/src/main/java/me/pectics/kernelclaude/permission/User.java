@@ -10,7 +10,7 @@ import java.util.Set;
 public interface User extends PermissionHolder {
 
     /**
-     * 获取用户唯一标识（复合标识）
+     * 获取用户唯一标识
      */
     String getId();
 
