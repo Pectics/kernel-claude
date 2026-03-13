@@ -1,2 +1,5 @@
 dependencies {
+    compileOnly(project(":api"))
+
+    implementation("com.google.guava:guava:33.5.0-jre")
 }
