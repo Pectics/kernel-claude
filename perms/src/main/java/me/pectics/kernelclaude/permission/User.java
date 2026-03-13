@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
  * <p>
  * 代表一个权限主体
  */
-public interface User extends PermissionHolder {
+public non-sealed interface User extends PermissionHolder {
 
     /**
      * 获取用户唯一标识

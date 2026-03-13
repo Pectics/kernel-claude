@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * 一组可以复用的权限集合
  */
-public interface Group extends PermissionHolder {
+public non-sealed interface Group extends PermissionHolder {
 
     /**
      * 获取权限组唯一标识
