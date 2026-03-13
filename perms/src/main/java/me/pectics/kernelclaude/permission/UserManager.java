@@ -4,19 +4,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * 用户管理器
  */
 public interface UserManager {
 
+    // User 基本操作接口
+
     /**
      * 使用用户 ID 获取用户
      *
-     * @param id 用户 ID
+     * @param userId 用户 ID
      * @return 用户对象，不存在则返回 empty
      */
-    @NotNull Optional<User> getUser(String id);
+    @NotNull Optional<User> getUser(String userId);
 
     /**
      * 使用平台和原生用户 ID 获取用户
@@ -25,7 +28,9 @@ public interface UserManager {
      * @param nativeId 原生用户 ID
      * @return 用户对象，不存在则返回 empty
      */
-    @NotNull Optional<User> getUser(String platform, String nativeId);
+    default @NotNull Optional<User> getUser(String platform, String nativeId) {
+        return getUser(User.calculateId(platform, nativeId));
+    }
 
     /**
      * 获取指定平台下的所有用户
@@ -49,7 +54,7 @@ public interface UserManager {
      * @param platform 平台标识
      * @param nativeId 原生用户 ID
      * @return 新创建的用户
-     * @throws IllegalArgumentException 如果用户名已存在
+     * @throws IllegalArgumentException 如果用户已存在
      */
     @NotNull User createUser(String platform, String nativeId);
 
@@ -67,10 +72,10 @@ public interface UserManager {
     /**
      * 使用用户 ID 删除用户
      *
-     * @param id 用户 ID
+     * @param userId 用户 ID
      * @return 是否成功
      */
-    boolean deleteUser(String id);
+    boolean deleteUser(String userId);
 
     /**
      * 使用平台标识和原生用户 ID 删除用户
@@ -79,15 +84,17 @@ public interface UserManager {
      * @param nativeId 原生用户 ID
      * @return 是否成功
      */
-    boolean deleteUser(String platform, String nativeId);
+    default boolean deleteUser(String platform, String nativeId) {
+        return deleteUser(User.calculateId(platform, nativeId));
+    }
 
     /**
      * 使用用户 ID 检查用户是否存在
      *
-     * @param id 用户 ID
+     * @param userId 用户 ID
      * @return 是否存在
      */
-    boolean hasUser(String id);
+    boolean hasUser(String userId);
 
     /**
      * 使用平台标识和原生用户 ID 检查用户是否存在
@@ -96,5 +103,8 @@ public interface UserManager {
      * @param nativeId 原生用户 ID
      * @return 是否存在
      */
-    boolean hasUser(String platform, String nativeId);
+    default boolean hasUser(String platform, String nativeId) {
+        return hasUser(User.calculateId(platform, nativeId));
+    }
+
 }

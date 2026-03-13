@@ -14,6 +14,14 @@ import java.util.Set;
 public interface PermissionHolder {
 
     /**
+     * 权限持有者类型
+     */
+    enum Type {
+        USER, // 用户
+        GROUP // 权限组
+    }
+
+    /**
      * 获取唯一标识
      */
     @NotNull String getId();
@@ -30,56 +38,45 @@ public interface PermissionHolder {
      *
      * @param node 权限节点
      */
-    void addPermissionNode(PermissionNode node);
+    void addPermissionNode(@NotNull PermissionNode node);
 
     /**
      * 移除直接权限节点
      *
      * @param key 权限键
      */
-    void removePermissionNode(String key);
-
-    /**
-     * 获取继承权限组
-     *
-     * @return 继承权限组集合
-     */
-    @NotNull Set<Group> getSuperGroups();
-
-    /**
-     * 添加继承权限组
-     *
-     * @param groupId 权限组 ID
-     */
-    void addSuperGroup(String groupId);
-
-    /**
-     * 取消继承权限组
-     *
-     * @param groupId 权限组 ID
-     */
-    void removeSuperGroup(String groupId);
-
-    /**
-     * 获取权重（用于冲突解决）
-     * <p>
-     * 权重越高，优先级越高
-     *
-     * @return 权重值
-     */
-    int getWeight();
+    void removePermissionNode(@NotNull String key);
 
     /**
      * 检查是否拥有指定权限
-     * <p>
-     * 权限检查顺序：<br>
-     * 1. 检查直接权限<br>
-     * 2. 检查继承的组权限（递归）<br>
-     * 3. 考虑上下文条件
      *
      * @param key      权限键
      * @param contexts 当前上下文
      * @return 权限检查结果
      */
     @NotNull PermissionResult checkPermission(String key, Set<Context> contexts);
+
+//        if (key == null || key.isEmpty())
+//            return PermissionResult.UNDEFINED;
+//
+//        // 1. 检查直接权限
+//        for (PermissionNode node : getPermissionNodes()) {
+//            if (!node.matches(key)) continue;
+//            if (!node.matches(contexts)) continue;
+//            if (node.isExpired()) continue;
+//            return node.value() ? GRANTED : REJECTED;
+//        }
+//
+//        // 2. 检查继承的组权限（递归）
+//        val groups = getSuperGroups().stream()
+//                .sorted(Comparator.comparingInt(Group::getWeight).reversed()) // 权重高的组优先检查
+//                .toList();
+//        for (Group group : groups) {
+//            val result = group.checkPermission(key, contexts);
+//            if (result != PermissionResult.UNDEFINED)
+//                return result;
+//        }
+//
+//        // 3. 没有明确的权限设置，返回 UNDEFINED
+//        return PermissionResult.UNDEFINED;
 }

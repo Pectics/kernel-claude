@@ -2,7 +2,9 @@ package me.pectics.kernelclaude.permission;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * 用户
@@ -27,29 +29,23 @@ public interface User extends PermissionHolder {
     @NotNull String getNativeId();
 
     /**
-     * 获取用户继承的权限组
+     * 计算用户唯一标识
      */
-    @NotNull Set<String> getGroups();
+    static @NotNull String calculateId(String platform, String nativeId) {
+        String input = "?platform=" + platform + "&native_id=" + nativeId;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
 
-    /**
-     * 将用户继承自指定权限组
-     *
-     * @param groupId 权限组 ID
-     */
-    void inherit(String groupId);
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest)
+                sb.append(String.format("%02x", b));
 
-    /**
-     * 将用户取消继承指定权限组
-     *
-     * @param groupId 权限组 ID
-     */
-    void uninherit(String groupId);
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // MD5 是 Java 标准算法，理论上不会抛出此异常
+            throw new RuntimeException("Never happens: MD5 algorithm not found", e);
+        }
+    }
 
-    /**
-     * 检查用户是否继承指定权限组（包括间接继承）
-     *
-     * @param groupId 要检查的权限组 ID
-     * @return 是否继承
-     */
-    boolean inherits(String groupId);
 }

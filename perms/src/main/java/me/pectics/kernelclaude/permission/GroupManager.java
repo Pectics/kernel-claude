@@ -1,14 +1,16 @@
 package me.pectics.kernelclaude.permission;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * 权限组管理器
  */
 public interface GroupManager {
+
+    // Group 基本操作接口
 
     /**
      * 使用权限组 ID 获取权限组
@@ -100,4 +102,58 @@ public interface GroupManager {
      * @return 是否存在
      */
     boolean hasGroup(String groupId);
+
+    // Group-Super 关联相关接口
+
+    /**
+     * 获取权限组所继承的权限组集合
+     *
+     * @param groupId 权限组 ID
+     * @return 继承的权限组集合
+     */
+    @NotNull Set<Group> getGroupSupers(@NotNull String groupId);
+
+    /**
+     * 将权限组继承自另一权限组
+     *
+     * @param groupId 权限组 ID
+     * @param superId 另一权限组 ID
+     */
+    void addGroupSuper(@NotNull String groupId, @NotNull String superId);
+
+    /**
+     * 将权限组取消继承自另一权限组
+     *
+     * @param groupId 权限组 ID
+     * @param superId 另一权限组 ID
+     */
+    void removeGroupSuper(@NotNull String groupId, @NotNull String superId);
+
+    /**
+     * 检查权限组是否存在继承自的权限组
+     *
+     * @param groupId 权限组 ID
+     * @return 是否存在
+     */
+    boolean hasGroupSuper(@NotNull String groupId);
+
+    /**
+     * 检查权限组是否<strong>间接继承</strong>自另一权限组
+     * <p>
+     * 要进行<strong>直接继承</strong>检查请参阅：{@link #hasDirectGroupSuper(String, String)}
+     *
+     * @param groupId 权限组 ID
+     * @param superId 另一权限组 ID
+     * @return 是否<strong>间接继承</strong>
+     */
+    boolean hasGroupSuper(@NotNull String groupId, @NotNull String superId);
+
+    /**
+     * 检查权限组是否<strong>直接继承</strong>继承自另一权限组
+     *
+     * @param groupId 权限组 ID
+     * @param superId 另一权限组 ID
+     * @return 是否<strong>直接继承</strong>
+     */
+    boolean hasDirectGroupSuper(@NotNull String groupId, @NotNull String superId);
 }
