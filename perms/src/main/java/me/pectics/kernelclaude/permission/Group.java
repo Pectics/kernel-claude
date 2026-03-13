@@ -2,8 +2,6 @@ package me.pectics.kernelclaude.permission;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-
 /**
  * 权限组
  * <p>
@@ -15,11 +13,6 @@ public interface Group extends PermissionHolder {
      * 获取权限组唯一标识
      */
     @NotNull String getId();
-
-    /**
-     * 获取显示名称
-     */
-    @NotNull String getDisplayName();
 
     /**
      * 获取组权重

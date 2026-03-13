@@ -27,18 +27,6 @@ public interface User extends PermissionHolder {
     @NotNull String getNativeId();
 
     /**
-     * 获取显示名称
-     */
-    @NotNull String getDisplayName();
-
-    /**
-     * 设置显示名称
-     *
-     * @param displayName 显示名称
-     */
-    void setDisplayName(String displayName);
-
-    /**
      * 获取用户继承的权限组
      */
     @NotNull Set<String> getGroups();
