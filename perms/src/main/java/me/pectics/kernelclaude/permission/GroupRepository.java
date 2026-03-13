@@ -39,9 +39,8 @@ public interface GroupRepository {
      * 保存权限组（新增或更新）
      *
      * @param group 权限组对象
-     * @return 保存后的权限组对象
      */
-    @NotNull Group save(Group group);
+    void save(Group group);
 
     /**
      * 删除权限组
