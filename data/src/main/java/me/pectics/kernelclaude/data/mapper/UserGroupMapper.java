@@ -15,7 +15,7 @@ public interface UserGroupMapper {
 
     @Select("""
     SELECT user_id FROM kc_user_group
-    WHERE ug.group_id = #{groupId}
+    WHERE group_id = #{groupId}
     """)
     List<String> findUserIdsByGroup(@Param("groupId") String groupId);
 

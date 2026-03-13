@@ -17,20 +17,20 @@ import java.util.concurrent.CompletableFuture;
 public interface GroupManager {
 
     /**
-     * Loads a group by name.
+     * Loads a group by groupId.
      *
-     * @param name the group name
+     * @param groupId the group groupId
      * @return the group, or null if not found
      */
-    @NotNull CompletableFuture<@Nullable Group> loadGroup(@NotNull String name);
+    @NotNull CompletableFuture<@Nullable Group> loadGroup(@NotNull String groupId);
 
     /**
-     * Gets a cached group by name.
+     * Gets a cached group by groupId.
      *
-     * @param name the group name
+     * @param groupId the group groupId
      * @return the group, or null if not cached
      */
-    @Nullable Group getCachedGroup(@NotNull String name);
+    @Nullable Group getCachedGroup(@NotNull String groupId);
 
     /**
      * Gets all cached groups.
@@ -50,16 +50,16 @@ public interface GroupManager {
     /**
      * Creates a new group.
      *
-     * @param name the group name
+     * @param groupId the group groupId
      * @return the created group
      */
-    @NotNull CompletableFuture<@NotNull Group> createGroup(@NotNull String name);
+    @NotNull CompletableFuture<@NotNull Group> createGroup(@NotNull String groupId);
 
     /**
      * Deletes a group.
      *
-     * @param name the group name
+     * @param groupId the group groupId
      * @return true if deleted
      */
-    @NotNull CompletableFuture<Boolean> deleteGroup(@NotNull String name);
+    @NotNull CompletableFuture<Boolean> deleteGroup(@NotNull String groupId);
 }

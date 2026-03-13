@@ -6,6 +6,7 @@ package me.pectics.kernelclaude.perms.node;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 /**
@@ -78,14 +79,12 @@ public enum NodeEqualityPredicate implements BiPredicate<Node, Node> {
         return this.predicate.test(a, b);
     }
 
-    private static boolean equalsExpiry(Node a, Node b) {
-        if (a.hasExpiry() != b.hasExpiry()) {
+    private static boolean equalsExpiry(@NotNull Node a, @NotNull Node b) {
+        if (a.hasExpiry() != b.hasExpiry())
             return false;
-        }
-        if (!a.hasExpiry()) {
+        if (!a.hasExpiry())
             return true;
-        }
-        return a.getExpiry().equals(b.getExpiry());
+        return Objects.equals(a.getExpiry(), b.getExpiry());
     }
 
     /**
@@ -98,4 +97,5 @@ public enum NodeEqualityPredicate implements BiPredicate<Node, Node> {
     public boolean areEqual(@NotNull Node a, @NotNull Node b) {
         return test(a, b);
     }
+
 }

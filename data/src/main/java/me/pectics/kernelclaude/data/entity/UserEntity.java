@@ -1,104 +1,102 @@
+/*
+ * User Entity
+ * Licensed under MIT License
+ */
 package me.pectics.kernelclaude.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import me.pectics.kernelclaude.permission.Context;
-import me.pectics.kernelclaude.permission.PermissionNode;
-import me.pectics.kernelclaude.permission.User;
-import me.pectics.kernelclaude.permission.impl.SimpleUser;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * 用户实体
- * <p>
- * 对应数据库表 kc_user
+ * 用户实体，对应数据库表 kc_user
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserEntity {
 
-    /**
-     * 用户 ID（主键）
-     */
-    private String userId;
+    private final String platform;
+    private final String userId;        // 计算得出的唯一 ID
+    private final String nativeId;      // 平台原生 ID
+    private @Nullable String displayName;
+    private @NotNull String primaryGroup = "default";  // 主权限组
+    private long createdAt;
+    private long updatedAt;
 
-    /**
-     * 平台标识
-     */
-    private String platform;
-
-    /**
-     * 原生用户 ID
-     */
-    private String nativeId;
-
-    /**
-     * 显示名称
-     */
-    private String displayName;
-
-    /**
-     * 创建时间（Unix 时间戳）
-     */
-    private Long createdAt;
-
-    /**
-     * 更新时间（Unix 时间戳）
-     */
-    private Long updatedAt;
-
-    public User toDomain() {
-        // 创建用户对象
-        SimpleUser user = new SimpleUser(
-                entity.getPlatform(),
-                entity.getNativeId(),
-                entity.getDisplayName()
-        );
-
-        // userId 就是 holderId
-        String userId = entity.getUserId();
-
-        // 加载权限节点
-        List<PermissionNodeEntity> nodeEntities = permissionNodeMapper.findByHolder(HOLDER_TYPE_USER, userId);
-        for (PermissionNodeEntity nodeEntity : nodeEntities) {
-            PermissionNode node = new PermissionNode(
-                    nodeEntity.getKey(),
-                    nodeEntity.getValue(),
-                    Context.fromJson(nodeEntity.getContexts()),
-                    nodeEntity.getUntil()
-            );
-            user.addPermissionNode(node);
-        }
-
-        // 加载组关联
-        List<String> groupIds = userGroupMapper.findGroupIdsByUser(userId);
-        for (String groupId : groupIds) {
-            user.inherit(groupId);
-        }
-
-        return user;
+    public UserEntity(@NotNull String platform, @NotNull String userId, @NotNull String nativeId) {
+        this.platform = platform;
+        this.userId = userId;
+        this.nativeId = nativeId;
+        long now = System.currentTimeMillis();
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
-    /**
-     * 从 User 对象创建 UserEntity
-     *
-     * @param user 用户对象
-     * @return UserEntity 实例
-     */
-    public static UserEntity from(@NotNull User user) {
-        return UserEntity.builder()
-                .userId(user.getId())
-                .platform(user.getPlatform())
-                .nativeId(user.getNativeId())
-                .displayName(user.getDisplayName())
-                .updatedAt(System.currentTimeMillis())
-                .build();
+    public UserEntity(@NotNull String platform, @NotNull String userId, @NotNull String nativeId,
+                      @Nullable String displayName, @NotNull String primaryGroup,
+                      long createdAt, long updatedAt) {
+        this.platform = platform;
+        this.userId = userId;
+        this.nativeId = nativeId;
+        this.displayName = displayName;
+        this.primaryGroup = primaryGroup;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
+    @NotNull
+    public String getPlatform() {
+        return platform;
+    }
+
+    @NotNull
+    public String getUserId() {
+        return userId;
+    }
+
+    @NotNull
+    public String getNativeId() {
+        return nativeId;
+    }
+
+    @Nullable
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(@Nullable String displayName) {
+        this.displayName = displayName;
+    }
+
+    @NotNull
+    public String getPrimaryGroup() {
+        return primaryGroup;
+    }
+
+    public void setPrimaryGroup(@NotNull String primaryGroup) {
+        this.primaryGroup = primaryGroup;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "platform='" + platform + '\'' +
+                ", userId='" + userId + '\'' +
+                ", nativeId='" + nativeId + '\'' +
+                ", displayName='" + displayName + '\'' +
+                '}';
+    }
 }

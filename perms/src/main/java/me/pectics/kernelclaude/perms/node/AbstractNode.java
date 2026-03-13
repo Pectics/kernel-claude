@@ -5,6 +5,9 @@
 package me.pectics.kernelclaude.perms.node;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.ToString;
 import me.pectics.kernelclaude.perms.context.ContextSet;
 import me.pectics.kernelclaude.perms.context.ImmutableContextSet;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * Abstract base implementation of Node.
  */
+@ToString(of = {"key", "value", "expireAt", "contexts"})
 public abstract class AbstractNode implements Node {
 
     /**
@@ -25,10 +29,10 @@ public abstract class AbstractNode implements Node {
     public static final char NODE_SEPARATOR = '.';
     public static final String NODE_SEPARATOR_STRING = String.valueOf(NODE_SEPARATOR);
 
-    protected final String key;
+    protected final @Getter String key;
     protected final boolean value;
     protected final long expireAt; // 0L for no expiry, otherwise epoch seconds
-    protected final ImmutableContextSet contexts;
+    protected final @Getter ImmutableContextSet contexts;
 
     private final int hashCode;
 
@@ -41,18 +45,8 @@ public abstract class AbstractNode implements Node {
     }
 
     @Override
-    public @NotNull String getKey() {
-        return this.key;
-    }
-
-    @Override
     public boolean getValue() {
-        return this.value;
-    }
-
-    @Override
-    public @NotNull ImmutableContextSet getContexts() {
-        return this.contexts;
+        return value;
     }
 
     @Override
@@ -68,9 +62,8 @@ public abstract class AbstractNode implements Node {
     @Override
     public @Nullable Duration getExpiryDuration() {
         Instant expiry = getExpiry();
-        if (expiry == null) {
+        if (expiry == null)
             return null;
-        }
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         return Duration.between(now, expiry);
     }
@@ -84,12 +77,10 @@ public abstract class AbstractNode implements Node {
     @Override
     public boolean matchesKey(@NotNull String key) {
         String normalizedKey = key.toLowerCase();
-        if (this.key.equals(normalizedKey)) {
+        if (this.key.equals(normalizedKey))
             return true;
-        }
-        if (this.key.equals("**")) {
+        if (this.key.equals("**"))
             return true;
-        }
 
         // Recursive wildcard (**) matches all descendants
         if (this.key.endsWith(".**")) {
@@ -100,12 +91,11 @@ public abstract class AbstractNode implements Node {
         // Non-recursive wildcard (*) matches direct children only
         if (this.key.endsWith(".*")) {
             String prefix = this.key.substring(0, this.key.length() - 1);
-            if (!normalizedKey.startsWith(prefix)) {
+            if (!normalizedKey.startsWith(prefix))
                 return false;
-            }
-            String remaining = normalizedKey.substring(prefix.length());
+            String remain = normalizedKey.substring(prefix.length());
             // Should not contain any more separators
-            return !remaining.contains(".");
+            return !remain.equals("**") && remain.indexOf(NODE_SEPARATOR) == -1;
         }
 
         return false;
@@ -138,17 +128,9 @@ public abstract class AbstractNode implements Node {
         int result = 1;
         result = result * PRIME + this.key.hashCode();
         result = result * PRIME + (this.value ? 79 : 97);
-        result = result * PRIME + (int) (this.expireAt >>> 32 ^ this.expireAt);
+        result = result * PRIME + Long.hashCode(this.expireAt);
         result = result * PRIME + this.contexts.hashCode();
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Node(" +
-                "key=" + this.key + ", " +
-                "value=" + this.value + ", " +
-                "expiry=" + getExpiry() + ", " +
-                "contexts=" + this.contexts + ")";
-    }
 }

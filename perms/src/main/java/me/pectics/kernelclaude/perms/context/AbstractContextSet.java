@@ -21,27 +21,23 @@ abstract class AbstractContextSet implements ContextSet {
     @Override
     public boolean isSatisfiedBy(@NotNull ContextSet other, @NotNull ContextSatisfyMode mode) {
         // Fast path for same instance
-        if (this == other) {
+        if (this == other)
             return true;
-        }
 
         Objects.requireNonNull(other, "other");
         Objects.requireNonNull(mode, "mode");
 
         // Empty set is always satisfied
-        if (this.isEmpty()) {
+        if (this.isEmpty())
             return true;
-        }
 
         // If this set isn't empty, but the other one is, then it can't be satisfied
-        if (other.isEmpty()) {
+        if (other.isEmpty())
             return false;
-        }
 
         // Fast path for ALL_VALUES_PER_KEY: if this has more entries than other, impossible
-        if (mode == ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY && this.size() > other.size()) {
+        if (mode == ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY && this.size() > other.size())
             return false;
-        }
 
         // Delegate to subclass implementation
         return otherContainsAll(other, mode);
@@ -57,15 +53,16 @@ abstract class AbstractContextSet implements ContextSet {
      */
     protected abstract boolean otherContainsAll(@NotNull ContextSet other, @NotNull ContextSatisfyMode mode);
 
-    static String sanitizeKey(String key) {
+    static @NotNull String sanitizeKey(String key) {
         Preconditions.checkNotNull(key, "key is null");
         Preconditions.checkArgument(Context.isValidKey(key), "key is (effectively) empty");
         return key.toLowerCase(Locale.ROOT);
     }
 
-    static String sanitizeValue(String value) {
+    static @NotNull String sanitizeValue(String value) {
         Preconditions.checkNotNull(value, "value is null");
         Preconditions.checkArgument(Context.isValidValue(value), "value is (effectively) empty");
         return value.toLowerCase(Locale.ROOT);
     }
+
 }

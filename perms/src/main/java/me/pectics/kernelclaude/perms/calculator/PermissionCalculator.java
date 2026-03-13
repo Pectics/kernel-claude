@@ -78,9 +78,8 @@ public class PermissionCalculator {
 
         // Check cache
         Map<String, Tristate> cached = cache.get(immutableContext);
-        if (cached != null) {
+        if (cached != null)
             return cached;
-        }
 
         // Filter nodes by context and build source map
         Map<String, Tristate> sourceMap = new HashMap<>();
@@ -120,9 +119,8 @@ public class PermissionCalculator {
 
         // Check direct result
         Tristate result = results.get(permission);
-        if (result != null) {
+        if (result != null)
             return result;
-        }
 
         // Check wildcard
         return wildcardProcessor.checkWildcard(permission);
@@ -138,11 +136,9 @@ public class PermissionCalculator {
         Map<String, Tristate> results = calculate(context);
         Set<String> granted = new HashSet<>();
 
-        for (Map.Entry<String, Tristate> entry : results.entrySet()) {
-            if (entry.getValue() == Tristate.TRUE) {
+        for (Map.Entry<String, Tristate> entry : results.entrySet())
+            if (entry.getValue() == Tristate.TRUE)
                 granted.add(entry.getKey());
-            }
-        }
 
         return ImmutableSet.copyOf(granted);
     }
@@ -152,9 +148,8 @@ public class PermissionCalculator {
      */
     public void invalidateCache() {
         cache.clear();
-        for (PermissionProcessor processor : processors) {
+        for (PermissionProcessor processor : processors)
             processor.invalidate();
-        }
     }
 
     /**
@@ -164,9 +159,8 @@ public class PermissionCalculator {
      */
     public void onNodeAdd(@NotNull Node node) {
         if (node.getType() == NodeType.PERMISSION) {
-            for (PermissionProcessor processor : processors) {
+            for (PermissionProcessor processor : processors)
                 processor.onNodeAdd(node);
-            }
             cache.clear();
         }
     }
@@ -178,9 +172,8 @@ public class PermissionCalculator {
      */
     public void onNodeRemove(@NotNull Node node) {
         if (node.getType() == NodeType.PERMISSION) {
-            for (PermissionProcessor processor : processors) {
+            for (PermissionProcessor processor : processors)
                 processor.onNodeRemove(node);
-            }
             cache.clear();
         }
     }

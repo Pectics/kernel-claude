@@ -5,7 +5,9 @@
 package me.pectics.kernelclaude.perms.model;
 
 import com.google.common.collect.ImmutableList;
+import lombok.val;
 import me.pectics.kernelclaude.perms.context.ContextSet;
+import me.pectics.kernelclaude.perms.context.ImmutableContextSet;
 import me.pectics.kernelclaude.perms.node.Node;
 import me.pectics.kernelclaude.perms.node.NodeType;
 import me.pectics.kernelclaude.perms.types.Tristate;
@@ -28,13 +30,6 @@ public interface PermissionHolder {
      * @return the identifier
      */
     @NotNull String getIdentifier();
-
-    /**
-     * Gets a friendly name for this holder.
-     *
-     * @return a friendly name for display
-     */
-    @NotNull String getFriendlyName();
 
     /**
      * Gets the node map for a specific data type.
@@ -138,11 +133,36 @@ public interface PermissionHolder {
      * @return the result
      */
     default @NotNull Tristate checkPermission(@NotNull String permission) {
-        return checkPermission(permission, me.pectics.kernelclaude.perms.context.ImmutableContextSet.empty());
+        return checkPermission(permission, ImmutableContextSet.empty());
     }
 
     /**
      * Removes any expired temporary nodes.
      */
     void auditTemporaryNodes();
+
+    /**
+     * Checks if a permission matches a wildcard pattern.
+     *
+     * @param permission the permission to match
+     * @param wildcard   the wildcard pattern (e.g. "example.*" or "example.**")
+     * @return true if the permission matches the wildcard, false otherwise
+     */
+    static boolean matchPermissionWildcard(@NotNull String permission, @NotNull String wildcard) {
+        if (wildcard.equals("**"))
+            return true;
+        if (wildcard.equals("*"))
+            return !permission.equals("**") && permission.indexOf('.') == -1;
+        if (wildcard.endsWith(".**")) {
+            String prefix = wildcard.substring(0, wildcard.length() - 2);
+            return permission.startsWith(prefix);
+        }
+        if (wildcard.endsWith(".*")) {
+            val prefix = wildcard.substring(0, wildcard.length() - 1);
+            val remain = permission.substring(prefix.length());
+            return permission.startsWith(prefix) && !remain.equals("**") && remain.indexOf('.') == -1;
+        }
+        return false;
+    }
+
 }

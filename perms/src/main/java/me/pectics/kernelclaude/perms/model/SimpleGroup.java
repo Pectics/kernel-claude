@@ -4,6 +4,8 @@
  */
 package me.pectics.kernelclaude.perms.model;
 
+import lombok.*;
+import me.pectics.kernelclaude.perms.context.ContextSatisfyMode;
 import me.pectics.kernelclaude.perms.context.ContextSet;
 import me.pectics.kernelclaude.perms.node.Node;
 import me.pectics.kernelclaude.perms.node.NodeType;
@@ -21,57 +23,33 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Basic implementation of Group.
  */
+@EqualsAndHashCode(of = "groupId")
+@ToString(of = "groupId")
 public class SimpleGroup implements Group {
 
-    private final String name;
-    private volatile String displayName;
-    private volatile OptionalInt weight = OptionalInt.empty();
+    private final @Getter @NotNull String groupId;
 
-    private final NodeMap normalData;
-    private final NodeMap transientData;
+    private volatile @Getter @NotNull OptionalInt weight = OptionalInt.empty();
+
+    private final NodeMap normalData = new SimpleNodeMap();
+    private final NodeMap transientData = new SimpleNodeMap();
 
     // Inheritance cache
     private final Map<ContextSet, Collection<Group>> inheritanceCache = new ConcurrentHashMap<>();
 
     // Reference to group manager for inheritance resolution
-    private volatile GroupResolver groupResolver;
+    private volatile @Setter @Nullable GroupResolver groupResolver;
 
     /**
      * Functional interface for resolving groups by name.
      */
     @FunctionalInterface
     public interface GroupResolver {
-        @Nullable Group resolve(@NotNull String name);
+        @Nullable Group resolve(@NotNull String groupId);
     }
 
-    public SimpleGroup(@NotNull String name) {
-        this.name = name;
-        this.normalData = new SimpleNodeMap();
-        this.transientData = new SimpleNodeMap();
-    }
-
-    public void setGroupResolver(@Nullable GroupResolver resolver) {
-        this.groupResolver = resolver;
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return name;
-    }
-
-    @Override
-    public @Nullable String getDisplayName() {
-        return displayName;
-    }
-
-    @Override
-    public void setDisplayName(@Nullable String displayName) {
-        this.displayName = displayName;
-    }
-
-    @Override
-    public @NotNull OptionalInt getWeight() {
-        return weight;
+    public SimpleGroup(@NotNull String groupId) {
+        this.groupId = groupId;
     }
 
     @Override
@@ -114,37 +92,33 @@ public class SimpleGroup implements Group {
         addNodesWithContext(result, normalData.toCollection(), context);
 
         // Add inherited nodes from parent groups
-        for (Group parent : getInheritedGroups(context)) {
-            if (parent != this) {
+        for (Group parent : getInheritedGroups(context))
+            if (parent != this)
                 addNodesWithContext(result, parent.resolveInheritedNodes(context), context);
-            }
-        }
 
         return ImmutableList.copyOf(result);
     }
 
-    private void addNodesWithContext(Set<Node> result, Collection<Node> nodes, ContextSet queryContext) {
-        for (Node node : nodes) {
-            if (node.getContexts().satisfies(queryContext, me.pectics.kernelclaude.perms.context.ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY)) {
+    private void addNodesWithContext(@NotNull Set<Node> result,
+                                     @NotNull Collection<Node> nodes,
+                                     @NotNull ContextSet queryContext) {
+        for (Node node : nodes)
+            if (node.getContexts().satisfies(queryContext, ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY))
                 result.add(node);
-            }
-        }
     }
 
     @Override
     public @NotNull @Unmodifiable Collection<Group> getInheritedGroups(@NotNull ContextSet context) {
         // Check cache
         Collection<Group> cached = inheritanceCache.get(context);
-        if (cached != null) {
+        if (cached != null)
             return cached;
-        }
 
         Set<Group> inherited = new LinkedHashSet<>();
         inherited.add(this); // Include self
 
-        if (groupResolver == null) {
+        if (groupResolver == null)
             return ImmutableList.copyOf(inherited);
-        }
 
         // Get inheritance nodes
         Collection<InheritanceNode> inheritanceNodes = getNodes().stream()
@@ -152,13 +126,16 @@ public class SimpleGroup implements Group {
                 .map(NodeType.INHERITANCE::cast)
                 .filter(node -> node.getContexts().satisfies(
                         context,
-                        me.pectics.kernelclaude.perms.context.ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY
+                        ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY
                 ))
                 .collect(ImmutableList.toImmutableList());
 
         // Resolve parent groups
         for (InheritanceNode node : inheritanceNodes) {
-            Group parent = groupResolver.resolve(node.getGroupName());
+            val gr = groupResolver;
+            if (gr == null)
+                continue;
+            val parent = gr.resolve(node.getGroupName());
             if (parent != null && !inherited.contains(parent)) {
                 inherited.add(parent);
                 // Recursively get parent's inherited groups
@@ -176,37 +153,19 @@ public class SimpleGroup implements Group {
         Collection<Node> nodes = resolveInheritedNodes(context);
 
         // Check direct permission
-        for (Node node : nodes) {
-            if (node.getType() == NodeType.PERMISSION && node.matchesKey(permission)) {
-                if (context.satisfies(node.getContexts(), me.pectics.kernelclaude.perms.context.ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY)) {
+        for (Node node : nodes)
+            if (node.getType() == NodeType.PERMISSION && node.matchesKey(permission))
+                if (context.satisfies(node.getContexts(), ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY))
                     return Tristate.fromBoolean(node.getValue());
-                }
-            }
-        }
 
         // Check wildcard permissions
-        for (Node node : nodes) {
-            if (node.getType() == NodeType.PERMISSION && node.getValue()) {
-                if (matchesWildcard(permission, node.getKey())) {
-                    if (context.satisfies(node.getContexts(), me.pectics.kernelclaude.perms.context.ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY)) {
+        for (Node node : nodes)
+            if (node.getType() == NodeType.PERMISSION && node.getValue())
+                if (PermissionHolder.matchPermissionWildcard(permission, node.getKey()))
+                    if (context.satisfies(node.getContexts(), ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY))
                         return Tristate.TRUE;
-                    }
-                }
-            }
-        }
 
         return Tristate.UNDEFINED;
-    }
-
-    private boolean matchesWildcard(String permission, String wildcard) {
-        if (wildcard.equals("*")) {
-            return true;
-        }
-        if (wildcard.endsWith(".*")) {
-            String prefix = wildcard.substring(0, wildcard.length() - 2);
-            return permission.startsWith(prefix + ".");
-        }
-        return false;
     }
 
     @Override
@@ -227,21 +186,4 @@ public class SimpleGroup implements Group {
         inheritanceCache.clear();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SimpleGroup that = (SimpleGroup) o;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "SimpleGroup{name='" + name + "'}";
-    }
 }

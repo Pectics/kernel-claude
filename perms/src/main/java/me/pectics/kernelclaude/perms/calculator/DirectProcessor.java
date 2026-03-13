@@ -4,6 +4,8 @@
  */
 package me.pectics.kernelclaude.perms.calculator;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.pectics.kernelclaude.perms.node.Node;
 import me.pectics.kernelclaude.perms.types.Tristate;
 import org.jetbrains.annotations.NotNull;
@@ -19,18 +21,8 @@ import java.util.Map;
  */
 public class DirectProcessor implements PermissionProcessor {
 
-    private Map<String, Tristate> source = Map.of();
-    private Map<String, Tristate> result = Map.of();
-
-    @Override
-    public void setSource(@NotNull Map<String, Tristate> source) {
-        this.source = source;
-    }
-
-    @Override
-    public @NotNull Map<String, Tristate> getResult() {
-        return result;
-    }
+    private @Setter @NotNull Map<String, Tristate> source = Map.of();
+    private @Getter @NotNull Map<String, Tristate> result = Map.of();
 
     @Override
     public void process() {
@@ -52,4 +44,5 @@ public class DirectProcessor implements PermissionProcessor {
     public void invalidate() {
         this.result = Map.of();
     }
+
 }

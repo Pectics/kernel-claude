@@ -4,6 +4,8 @@
  */
 package me.pectics.kernelclaude.perms.node;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import me.pectics.kernelclaude.perms.context.Context;
 import me.pectics.kernelclaude.perms.context.ContextSet;
 import me.pectics.kernelclaude.perms.context.MutableContextSet;
@@ -17,19 +19,13 @@ import java.time.Instant;
 /**
  * Abstract base implementation of NodeBuilder.
  */
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class AbstractNodeBuilder<N extends Node, B extends NodeBuilder<N, B>> implements NodeBuilder<N, B> {
 
     protected boolean value = true;
     protected long expireAt = 0L;
     protected MutableContextSet context = MutableContextSet.create();
-
-    protected AbstractNodeBuilder() { }
-
-    protected AbstractNodeBuilder(boolean value, long expireAt, MutableContextSet context) {
-        this.value = value;
-        this.expireAt = expireAt;
-        this.context = context;
-    }
 
     @SuppressWarnings("unchecked")
     protected B self() {

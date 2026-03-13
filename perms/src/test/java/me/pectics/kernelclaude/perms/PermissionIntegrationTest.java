@@ -39,7 +39,7 @@ class PermissionIntegrationTest {
 
         adminGroup = new SimpleGroup("admin");
         adminGroup.setWeight(100);
-        adminGroup.data().add(PermissionNode.builder("*").value(true).build());
+        adminGroup.data().add(PermissionNode.builder("**").value(true).build());
         adminGroup.data().add(InheritanceNode.builder("another").build());
 
         // Set up group resolver
@@ -95,6 +95,21 @@ class PermissionIntegrationTest {
         }
 
         @Test
+        @DisplayName("递归通配符应匹配非递归通配符，反之则不")
+        void recursiveWildcardShouldOverrideNonRecursive() {
+            User user1 = new SimpleUser("telegram", "12345");
+            user1.data().add(PermissionNode.builder("**").value(true).build());
+
+            User user2 = new SimpleUser("telegram", "54321");
+            user2.data().add(PermissionNode.builder("*").value(true).build());
+
+            Tristate result1 = user1.checkPermission("*");
+            assertThat(result1).isEqualTo(Tristate.TRUE);
+            Tristate result2 = user2.checkPermission("**");
+            assertThat(result2).isEqualTo(Tristate.UNDEFINED);
+        }
+
+        @Test
         @DisplayName("组内用户应继承组权限")
         void userInGroupShouldInheritGroupPermissions() {
             SimpleUser user = new SimpleUser("telegram", "12345");
@@ -113,7 +128,7 @@ class PermissionIntegrationTest {
         }
 
         @Test
-        @DisplayName("通配符权限应匹配所有权限")
+        @DisplayName("递归通配符权限应匹配所有权限")
         void adminWithWildcardShouldMatchAllPermissions() {
             SimpleUser user = new SimpleUser("telegram", "67890");
             user.setGroupResolver(name -> switch (name) {
@@ -158,7 +173,7 @@ class PermissionIntegrationTest {
             var nodes = group.resolveInheritedNodes(ImmutableContextSet.empty());
 
             // Should contain admin's wildcard permission
-            assertThat(nodes.stream().anyMatch(n -> n.getKey().equals("*"))).isTrue();
+            assertThat(nodes.stream().anyMatch(n -> n.getKey().equals("**"))).isTrue();
             // Should contain another's permission (inherited)
             assertThat(nodes.stream().anyMatch(n -> n.getKey().equals("another.test"))).isTrue();
         }

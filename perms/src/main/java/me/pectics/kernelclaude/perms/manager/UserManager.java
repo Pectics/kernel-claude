@@ -30,7 +30,7 @@ public interface UserManager {
      * @param uniqueId the unique ID
      * @return the user, or null if not cached
      */
-    @Nullable User getCachedUser(@NotNull String uniqueId);
+    @Nullable User getCachedUser(@NotNull String platform, @NotNull String nativeId);
 
     /**
      * Saves a user.
@@ -45,7 +45,7 @@ public interface UserManager {
      *
      * @param uniqueId the unique ID
      */
-    void unloadUser(@NotNull String uniqueId);
+    void unloadUser(@NotNull String platform, @NotNull String nativeId);
 
     /**
      * Gets all cached users.

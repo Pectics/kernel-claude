@@ -5,6 +5,7 @@
 package me.pectics.kernelclaude.perms.node.types;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import me.pectics.kernelclaude.perms.context.ImmutableContextSet;
 import me.pectics.kernelclaude.perms.node.AbstractNode;
 import me.pectics.kernelclaude.perms.node.AbstractNodeBuilder;
@@ -67,14 +68,14 @@ public final class MetaNode extends AbstractNode {
         return NODE_MARKER + metaKey.toLowerCase(Locale.ROOT) + "." + escapeValue(metaValue);
     }
 
-    private static String escapeValue(String value) {
+    private static @NotNull String escapeValue(@NotNull String value) {
         // Simple escaping - replace dots with a placeholder
         // In a full implementation, you might want more sophisticated escaping
         return value.replace(".", "\\.");
     }
 
-    private final String metaKey;
-    private final String metaValue;
+    private final @Getter String metaKey;
+    private final @Getter String metaValue;
 
     private MetaNode(String metaKey, String metaValue, boolean value, long expireAt, ImmutableContextSet contexts) {
         super(key(metaKey, metaValue), value, expireAt, contexts);
@@ -85,24 +86,6 @@ public final class MetaNode extends AbstractNode {
     @Override
     public @NotNull NodeType<MetaNode> getType() {
         return NodeType.META;
-    }
-
-    /**
-     * Gets the meta key.
-     *
-     * @return the meta key
-     */
-    public @NotNull String getMetaKey() {
-        return this.metaKey;
-    }
-
-    /**
-     * Gets the meta value.
-     *
-     * @return the meta value
-     */
-    public @NotNull String getMetaValue() {
-        return this.metaValue;
     }
 
     @Override
@@ -123,7 +106,7 @@ public final class MetaNode extends AbstractNode {
             this.metaValue = null;
         }
 
-        private Builder(String metaKey, String metaValue, boolean value, long expireAt, ImmutableContextSet context) {
+        private Builder(String metaKey, String metaValue, boolean value, long expireAt, @NotNull ImmutableContextSet context) {
             super(value, expireAt, context.mutableCopy());
             this.metaKey = metaKey;
             this.metaValue = metaValue;
@@ -166,5 +149,7 @@ public final class MetaNode extends AbstractNode {
             ensureDefined(this.metaValue, "metaValue");
             return new MetaNode(this.metaKey, this.metaValue, this.value, this.expireAt, this.context.immutableCopy());
         }
+
     }
+
 }

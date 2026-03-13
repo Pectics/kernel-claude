@@ -4,6 +4,7 @@
  */
 package me.pectics.kernelclaude.perms.node.types;
 
+import lombok.Getter;
 import me.pectics.kernelclaude.perms.context.ImmutableContextSet;
 import me.pectics.kernelclaude.perms.node.AbstractNode;
 import me.pectics.kernelclaude.perms.node.AbstractNodeBuilder;
@@ -52,7 +53,7 @@ public final class WeightNode extends AbstractNode {
         return builder(weight).build();
     }
 
-    private final int weight;
+    private final @Getter int weight;
 
     private WeightNode(int weight, boolean value, long expireAt, ImmutableContextSet contexts) {
         super(NODE_MARKER + weight, value, expireAt, contexts);
@@ -62,15 +63,6 @@ public final class WeightNode extends AbstractNode {
     @Override
     public @NotNull NodeType<WeightNode> getType() {
         return NodeType.WEIGHT;
-    }
-
-    /**
-     * Gets the weight value.
-     *
-     * @return the weight
-     */
-    public int getWeight() {
-        return this.weight;
     }
 
     @Override
@@ -89,7 +81,7 @@ public final class WeightNode extends AbstractNode {
             this.weight = null;
         }
 
-        private Builder(int weight, boolean value, long expireAt, ImmutableContextSet context) {
+        private Builder(int weight, boolean value, long expireAt, @NotNull ImmutableContextSet context) {
             super(value, expireAt, context.mutableCopy());
             this.weight = weight;
         }
@@ -110,5 +102,7 @@ public final class WeightNode extends AbstractNode {
             ensureDefined(this.weight, "weight");
             return new WeightNode(this.weight, this.value, this.expireAt, this.context.immutableCopy());
         }
+
     }
+
 }

@@ -3,17 +3,21 @@ plugins {
 }
 
 dependencies {
-    compileOnly(project(":perms"))
+    implementation(project(":perms"))
 
-    compileOnly("org.springframework.boot:spring-boot-starter")
-
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter")
     implementation("com.github.ben-manes.caffeine:caffeine")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
 
+    // MySQL
     runtimeOnly("com.mysql:mysql-connector-j")
+
+    // H2 (for testing)
+    testRuntimeOnly("com.h2database:h2")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    testImplementation(project(":perms"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test")
 }

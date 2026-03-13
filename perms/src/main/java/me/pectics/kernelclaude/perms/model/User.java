@@ -4,8 +4,13 @@
  */
 package me.pectics.kernelclaude.perms.model;
 
+import lombok.SneakyThrows;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 /**
  * Represents a user (player) that holds permission data.
@@ -13,11 +18,11 @@ import org.jetbrains.annotations.Nullable;
 public interface User extends PermissionHolder {
 
     /**
-     * Gets the unique ID of this user.
+     * Gets the user ID of this user.
      *
-     * @return the unique ID
+     * @return the user ID
      */
-    @NotNull String getUniqueId();
+    @NotNull String getUserId();
 
     /**
      * Gets the platform this user belongs to.
@@ -36,20 +41,6 @@ public interface User extends PermissionHolder {
     @NotNull String getNativeId();
 
     /**
-     * Gets the username of this user, if known.
-     *
-     * @return the username, or null if not known
-     */
-    @Nullable String getUsername();
-
-    /**
-     * Sets the username.
-     *
-     * @param username the username
-     */
-    void setUsername(@Nullable String username);
-
-    /**
      * Gets the primary group of this user.
      *
      * @return the primary group name
@@ -66,26 +57,13 @@ public interface User extends PermissionHolder {
     @NotNull DataMutateResult setPrimaryGroup(@NotNull String groupName);
 
     /**
-     * Gets the friendly name for this user.
-     *
-     * <p>Returns the username if known, otherwise the unique ID.</p>
-     *
-     * @return the friendly name
-     */
-    @Override
-    default @NotNull String getFriendlyName() {
-        String username = getUsername();
-        return username != null ? username : getUniqueId();
-    }
-
-    /**
      * Gets the unique identifier for this user.
      *
      * @return the unique ID
      */
     @Override
     default @NotNull String getIdentifier() {
-        return getUniqueId();
+        return getUserId();
     }
 
     /**
@@ -95,9 +73,16 @@ public interface User extends PermissionHolder {
      * @param nativeId the native ID
      * @return a unique ID
      */
+    @SneakyThrows
     static @NotNull String computeId(@NotNull String platform, @NotNull String nativeId) {
-        // Use a deterministic hash to create a unique ID
-        int hash = (platform + ":" + nativeId).hashCode();
-        return String.format("%s-%08x", platform.toLowerCase(), hash & 0xFFFFFFFFL);
+        val input = "?platform=" + platform + "&native_id=" + nativeId;
+        // Use md5 hash for better distribution
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+        StringBuilder hex = new StringBuilder(digest.length * 2);
+        for (byte b : digest)
+            hex.append(String.format("%02x", b));
+        return hex.toString();
     }
+
 }

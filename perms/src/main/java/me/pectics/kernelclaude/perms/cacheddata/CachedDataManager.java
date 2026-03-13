@@ -7,6 +7,7 @@ package me.pectics.kernelclaude.perms.cacheddata;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.pectics.kernelclaude.perms.calculator.PermissionCalculator;
+import me.pectics.kernelclaude.perms.context.ContextSatisfyMode;
 import me.pectics.kernelclaude.perms.context.ContextSet;
 import me.pectics.kernelclaude.perms.context.ImmutableContextSet;
 import me.pectics.kernelclaude.perms.model.PermissionHolder;
@@ -70,11 +71,10 @@ public class CachedDataManager {
         List<MetaNode> metas = new ArrayList<>();
 
         for (Node node : allNodes) {
-            if (node.getType() == NodeType.PERMISSION) {
+            if (node.getType() == NodeType.PERMISSION)
                 perms.add(NodeType.PERMISSION.cast(node));
-            } else if (node.getType() == NodeType.META) {
+            else if (node.getType() == NodeType.META)
                 metas.add(NodeType.META.cast(node));
-            }
         }
 
         this.permissionNodes = ImmutableList.copyOf(perms);
@@ -161,9 +161,8 @@ public class CachedDataManager {
 
         // Check cache
         Map<String, String> cached = metaCache.computeIfAbsent(immutableContext, k -> new HashMap<>());
-        if (cached.containsKey(key)) {
+        if (cached.containsKey(key))
             return cached.get(key);
-        }
 
         // Calculate
         String value = calculateMetaValue(key, context);
@@ -191,9 +190,8 @@ public class CachedDataManager {
         ImmutableContextSet immutableContext = context.immutableCopy();
 
         Map<String, String> result = metaCache.get(immutableContext);
-        if (result != null) {
+        if (result != null)
             return result;
-        }
 
         // Calculate all meta
         result = calculateAllMeta(context);
@@ -204,14 +202,11 @@ public class CachedDataManager {
     private @Nullable String calculateMetaValue(@NotNull String key, @NotNull ContextSet context) {
         String value = null;
 
-        for (MetaNode node : metaNodes) {
-            if (node.getMetaKey().equals(key)) {
-                if (node.getContexts().satisfies(context, me.pectics.kernelclaude.perms.context.ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY)) {
+        for (MetaNode node : metaNodes)
+            if (node.getMetaKey().equals(key))
+                if (node.getContexts().satisfies(context, ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY))
                     // Later nodes override earlier ones
                     value = node.getMetaValue();
-                }
-            }
-        }
 
         return value;
     }
@@ -219,12 +214,10 @@ public class CachedDataManager {
     private @NotNull Map<String, String> calculateAllMeta(@NotNull ContextSet context) {
         Map<String, String> result = new HashMap<>();
 
-        for (MetaNode node : metaNodes) {
-            if (node.getContexts().satisfies(context, me.pectics.kernelclaude.perms.context.ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY)) {
+        for (MetaNode node : metaNodes)
+            if (node.getContexts().satisfies(context, ContextSatisfyMode.ALL_VALUE_MATCH_PER_KEY))
                 // Later nodes override earlier ones
                 result.put(node.getMetaKey(), node.getMetaValue());
-            }
-        }
 
         return result;
     }
@@ -239,9 +232,8 @@ public class CachedDataManager {
     public void onNodeAdd(@NotNull Node node) {
         permissionCalculator.onNodeAdd(node);
 
-        if (node.getType() == NodeType.META) {
+        if (node.getType() == NodeType.META)
             metaCache.clear();
-        }
     }
 
     /**
@@ -252,9 +244,8 @@ public class CachedDataManager {
     public void onNodeRemove(@NotNull Node node) {
         permissionCalculator.onNodeRemove(node);
 
-        if (node.getType() == NodeType.META) {
+        if (node.getType() == NodeType.META)
             metaCache.clear();
-        }
     }
 
     // ==================== Utility Methods ====================
@@ -267,4 +258,5 @@ public class CachedDataManager {
     public @NotNull PermissionHolder getHolder() {
         return holder;
     }
+
 }

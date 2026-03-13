@@ -4,6 +4,8 @@
  */
 package me.pectics.kernelclaude.perms.node;
 
+import lombok.Getter;
+import lombok.ToString;
 import me.pectics.kernelclaude.perms.node.types.InheritanceNode;
 import me.pectics.kernelclaude.perms.node.types.MetaNode;
 import me.pectics.kernelclaude.perms.node.types.PermissionNode;
@@ -17,6 +19,7 @@ import java.util.function.Predicate;
  *
  * @param <T> the node class type
  */
+@ToString(of = "name")
 public final class NodeType<T extends Node> {
 
     /**
@@ -43,32 +46,14 @@ public final class NodeType<T extends Node> {
     public static final NodeType<WeightNode> WEIGHT =
             new NodeType<>("weight", WeightNode.class, n -> n instanceof WeightNode);
 
-    private final String name;
-    private final Class<T> nodeClass;
+    private final @Getter String name;
+    private final @Getter Class<T> nodeClass;
     private final Predicate<Node> matchesPredicate;
 
     private NodeType(String name, Class<T> nodeClass, Predicate<Node> matchesPredicate) {
         this.name = name;
         this.nodeClass = nodeClass;
         this.matchesPredicate = matchesPredicate;
-    }
-
-    /**
-     * Gets the name of this node type.
-     *
-     * @return the name
-     */
-    public @NotNull String getName() {
-        return this.name;
-    }
-
-    /**
-     * Gets the node class for this type.
-     *
-     * @return the node class
-     */
-    public @NotNull Class<T> getNodeClass() {
-        return this.nodeClass;
     }
 
     /**
@@ -90,14 +75,9 @@ public final class NodeType<T extends Node> {
      */
     @SuppressWarnings("unchecked")
     public @NotNull T cast(@NotNull Node node) {
-        if (!matches(node)) {
+        if (!matches(node))
             throw new ClassCastException("Node " + node + " is not of type " + this.name);
-        }
         return (T) node;
     }
 
-    @Override
-    public String toString() {
-        return "NodeType(" + this.name + ")";
-    }
 }

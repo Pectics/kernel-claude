@@ -5,6 +5,7 @@
 package me.pectics.kernelclaude.perms.node.types;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import me.pectics.kernelclaude.perms.context.ImmutableContextSet;
 import me.pectics.kernelclaude.perms.node.AbstractNode;
 import me.pectics.kernelclaude.perms.node.AbstractNodeBuilder;
@@ -61,9 +62,8 @@ public final class InheritanceNode extends AbstractNode {
      */
     public static @Nullable Builder parse(@NotNull String key) {
         String normalizedKey = key.toLowerCase(Locale.ROOT);
-        if (!normalizedKey.startsWith(NODE_MARKER)) {
+        if (!normalizedKey.startsWith(NODE_MARKER))
             return null;
-        }
         return builder().group(normalizedKey.substring(NODE_MARKER.length()));
     }
 
@@ -77,7 +77,7 @@ public final class InheritanceNode extends AbstractNode {
         return NODE_MARKER + groupName.toLowerCase(Locale.ROOT);
     }
 
-    private final String groupName;
+    private final @Getter String groupName;
 
     private InheritanceNode(String groupName, boolean value, long expireAt, ImmutableContextSet contexts) {
         super(key(groupName), value, expireAt, contexts);
@@ -87,15 +87,6 @@ public final class InheritanceNode extends AbstractNode {
     @Override
     public @NotNull NodeType<InheritanceNode> getType() {
         return NodeType.INHERITANCE;
-    }
-
-    /**
-     * Gets the group name.
-     *
-     * @return the group name
-     */
-    public @NotNull String getGroupName() {
-        return this.groupName;
     }
 
     @Override
@@ -114,7 +105,7 @@ public final class InheritanceNode extends AbstractNode {
             this.groupName = null;
         }
 
-        private Builder(String groupName, boolean value, long expireAt, ImmutableContextSet context) {
+        private Builder(String groupName, boolean value, long expireAt, @NotNull ImmutableContextSet context) {
             super(value, expireAt, context.mutableCopy());
             this.groupName = groupName;
         }
@@ -137,5 +128,7 @@ public final class InheritanceNode extends AbstractNode {
             ensureDefined(this.groupName, "groupName");
             return new InheritanceNode(this.groupName, this.value, this.expireAt, this.context.immutableCopy());
         }
+
     }
+
 }

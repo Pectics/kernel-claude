@@ -52,6 +52,14 @@ public interface Storage {
      */
     @NotNull CompletableFuture<@NotNull Set<String>> getAllUserIds();
 
+    /**
+     * Deletes a user.
+     *
+     * @param uniqueId the unique ID
+     * @return true if deleted
+     */
+    @NotNull CompletableFuture<Boolean> deleteUser(@NotNull String uniqueId);
+
     // ==================== Group Operations ====================
 
     /**

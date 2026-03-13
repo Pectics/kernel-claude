@@ -42,17 +42,18 @@ public interface PermissionProcessor {
      *
      * @param node the added node
      */
-    default void onNodeAdd(@NotNull Node node) {}
+    default void onNodeAdd(@NotNull Node node) { }
 
     /**
      * Notifies the processor that a node was removed.
      *
      * @param node the removed node
      */
-    default void onNodeRemove(@NotNull Node node) {}
+    default void onNodeRemove(@NotNull Node node) { }
 
     /**
      * Invalidates any cached data.
      */
-    default void invalidate() {}
+    default void invalidate() { }
+
 }

@@ -32,17 +32,25 @@ subprojects {
     }
 
     configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.3")
+        }
         dependencies {
+            dependency("org.jetbrains:annotations:26.1.0")
+
             dependency("org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.1")
+            dependency("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.1")
         }
     }
 
     dependencies {
-        compileOnly("org.jetbrains:annotations:26.0.1")
-        compileOnly("org.projectlombok:lombok:1.18.36")
-        annotationProcessor("org.projectlombok:lombok:1.18.36")
+        compileOnly("org.jetbrains:annotations")
+        compileOnly("org.projectlombok:lombok")
 
-        testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
+        annotationProcessor("org.projectlombok:lombok")
+
+        testImplementation("org.junit.jupiter:junit-jupiter")
+        testImplementation("org.assertj:assertj-core")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
 
@@ -53,4 +61,5 @@ subprojects {
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
     }
+
 }

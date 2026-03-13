@@ -49,22 +49,16 @@ public class SimpleNodeMap implements NodeMap {
 
         // Check specific context first
         List<Node> nodesInContext = nodesByContext.get(contexts);
-        if (nodesInContext != null) {
-            for (Node existing : nodesInContext) {
-                if (predicate.areEqual(node, existing)) {
+        if (nodesInContext != null)
+            for (Node existing : nodesInContext)
+                if (predicate.areEqual(node, existing))
                     return Tristate.fromBoolean(existing.getValue());
-                }
-            }
-        }
 
         // Check if any context contains the node
-        for (List<Node> nodes : nodesByContext.values()) {
-            for (Node existing : nodes) {
-                if (predicate.areEqual(node, existing)) {
+        for (List<Node> nodes : nodesByContext.values())
+            for (Node existing : nodes)
+                if (predicate.areEqual(node, existing))
                     return Tristate.fromBoolean(existing.getValue());
-                }
-            }
-        }
 
         return Tristate.UNDEFINED;
     }
@@ -74,15 +68,12 @@ public class SimpleNodeMap implements NodeMap {
         ImmutableContextSet contexts = node.getContexts();
         List<Node> nodesInContext = nodesByContext.computeIfAbsent(
                 contexts,
-                k -> new CopyOnWriteArrayList<>()
-        );
+                _ -> new CopyOnWriteArrayList<>());
 
         // Check for exact duplicate
-        for (Node existing : nodesInContext) {
-            if (NodeEqualityPredicate.EXACT.areEqual(node, existing)) {
+        for (Node existing : nodesInContext)
+            if (NodeEqualityPredicate.EXACT.areEqual(node, existing))
                 return DataMutateResult.FAIL_ALREADY_EXISTS;
-            }
-        }
 
         nodesInContext.add(node);
         return DataMutateResult.SUCCESS;
@@ -93,9 +84,8 @@ public class SimpleNodeMap implements NodeMap {
         ImmutableContextSet contexts = node.getContexts();
         List<Node> nodesInContext = nodesByContext.get(contexts);
 
-        if (nodesInContext == null) {
+        if (nodesInContext == null)
             return DataMutateResult.FAIL_DOES_NOT_EXIST;
-        }
 
         // Use removeIf to avoid CopyOnWriteArrayList iterator.remove() issue
         AtomicBoolean removed = new AtomicBoolean(false);
@@ -109,9 +99,9 @@ public class SimpleNodeMap implements NodeMap {
 
         if (removed.get()) {
             // Clean up empty context lists
-            if (nodesInContext.isEmpty()) {
+            if (nodesInContext.isEmpty())
                 nodesByContext.remove(contexts);
-            }
+
             return DataMutateResult.SUCCESS;
         }
 
@@ -131,15 +121,13 @@ public class SimpleNodeMap implements NodeMap {
             List<Node> nodes = entry.getValue();
             nodes.removeIf(test);
 
-            if (nodes.isEmpty()) {
+            if (nodes.isEmpty())
                 toRemove.add(entry.getKey());
-            }
         }
 
         // Remove empty context entries
-        for (ImmutableContextSet key : toRemove) {
+        for (ImmutableContextSet key : toRemove)
             nodesByContext.remove(key);
-        }
     }
 
     @Override
@@ -155,9 +143,8 @@ public class SimpleNodeMap implements NodeMap {
 
         if (nodes != null) {
             nodes.removeIf(test);
-            if (nodes.isEmpty()) {
+            if (nodes.isEmpty())
                 nodesByContext.remove(immutable);
-            }
         }
     }
 

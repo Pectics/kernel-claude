@@ -38,9 +38,8 @@ public final class MutableContextSet extends AbstractContextSet {
         MutableContextSet set = new MutableContextSet();
         for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
             String key = sanitizeKey(entry.getKey());
-            for (String value : entry.getValue()) {
+            for (String value : entry.getValue())
                 set.map.put(key, sanitizeValue(value));
-            }
         }
         return set;
     }
@@ -54,14 +53,13 @@ public final class MutableContextSet extends AbstractContextSet {
 
     @Override
     public @NotNull ImmutableContextSet immutableCopy() {
-        if (this.map.isEmpty()) {
+        if (this.map.isEmpty())
             return ImmutableContextSet.empty();
-        }
+
         ImmutableContextSet.Builder builder = ImmutableContextSet.builder();
         synchronized (this.map) {
-            for (Map.Entry<String, String> entry : this.map.entries()) {
+            for (Map.Entry<String, String> entry : this.map.entries())
                 builder.add(entry.getKey(), entry.getValue());
-            }
         }
         return builder.build();
     }
@@ -70,9 +68,8 @@ public final class MutableContextSet extends AbstractContextSet {
     public @NotNull MutableContextSet mutableCopy() {
         MutableContextSet copy = new MutableContextSet();
         synchronized (this.map) {
-            for (Map.Entry<String, String> entry : this.map.entries()) {
+            for (Map.Entry<String, String> entry : this.map.entries())
                 copy.map.put(entry.getKey(), entry.getValue());
-            }
         }
         return copy;
     }
@@ -81,9 +78,8 @@ public final class MutableContextSet extends AbstractContextSet {
     public @NotNull @Unmodifiable Set<Context> toSet() {
         Set<Context> result = new LinkedHashSet<>();
         synchronized (this.map) {
-            for (Map.Entry<String, String> entry : this.map.entries()) {
+            for (Map.Entry<String, String> entry : this.map.entries())
                 result.add(new ContextImpl(entry.getKey(), entry.getValue()));
-            }
         }
         return Collections.unmodifiableSet(result);
     }
@@ -140,19 +136,17 @@ public final class MutableContextSet extends AbstractContextSet {
         synchronized (this.map) {
             return switch (mode) {
                 case ALL_VALUE_MATCH_PER_KEY -> {
-                    for (Map.Entry<String, String> entry : this.map.entries()) {
-                        if (!other.contains(entry.getKey(), entry.getValue())) {
+                    for (Map.Entry<String, String> entry : this.map.entries())
+                        if (!other.contains(entry.getKey(), entry.getValue()))
                             yield false;
-                        }
-                    }
+
                     yield true;
                 }
                 case ANY_VALUE_MATCH_PER_KEY -> {
-                    for (Map.Entry<String, Collection<String>> entry : this.map.asMap().entrySet()) {
-                        if (!other.containsAny(entry.getKey(), entry.getValue())) {
+                    for (Map.Entry<String, Collection<String>> entry : this.map.asMap().entrySet())
+                        if (!other.containsAny(entry.getKey(), entry.getValue()))
                             yield false;
-                        }
-                    }
+
                     yield true;
                 }
             };
@@ -208,4 +202,5 @@ public final class MutableContextSet extends AbstractContextSet {
     public String toString() {
         return "MutableContextSet" + this.map;
     }
+
 }

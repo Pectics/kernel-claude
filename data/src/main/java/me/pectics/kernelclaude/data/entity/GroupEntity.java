@@ -1,43 +1,83 @@
+/*
+ * Group Entity
+ * Licensed under MIT License
+ */
 package me.pectics.kernelclaude.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * 权限组实体
- * <p>
- * 对应数据库表 kc_group
+ * 权限组实体，对应数据库表 kc_group
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class GroupEntity {
 
-    /**
-     * 权限组 ID（主键）
-     */
-    private String groupId;
+    private final String groupName;
+    private @Nullable String displayName;
+    private int weight;
+    private long createdAt;
+    private long updatedAt;
 
-    /**
-     * 显示名称
-     */
-    private String displayName;
+    public GroupEntity(@NotNull String groupName) {
+        this.groupName = groupName;
+        long now = System.currentTimeMillis();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
 
-    /**
-     * 权重
-     */
-    private Integer weight;
+    public GroupEntity(@NotNull String groupName, @Nullable String displayName,
+                       int weight, long createdAt, long updatedAt) {
+        this.groupName = groupName;
+        this.displayName = displayName;
+        this.weight = weight;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
-    /**
-     * 创建时间（Unix 时间戳）
-     */
-    private Long createdAt;
+    @NotNull
+    public String getGroupName() {
+        return groupName;
+    }
 
-    /**
-     * 更新时间（Unix 时间戳）
-     */
-    private Long updatedAt;
+    @Nullable
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(@Nullable String displayName) {
+        this.displayName = displayName;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "GroupEntity{" +
+                "groupName='" + groupName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", weight=" + weight +
+                '}';
+    }
 }

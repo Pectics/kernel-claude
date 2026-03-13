@@ -1,82 +1,86 @@
+/*
+ * Permission Node Entity
+ * Licensed under MIT License
+ */
 package me.pectics.kernelclaude.data.entity;
 
-import lombok.*;
-import me.pectics.kernelclaude.permission.Context;
-import me.pectics.kernelclaude.permission.PermissionNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * 权限节点实体
- * <p>
- * 对应数据库表 kc_permission_node
- * <p>
- * 持有者类型可以是 USER 或 GROUP
+ * 权限节点实体，对应数据库表 kc_permission_node
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class PermissionNodeEntity {
 
-    /**
-     * 节点 ID（主键）
-     */
-    private Long nodeId;
+    // Holder type constants
+    public static final String TYPE_USER = "USER";
+    public static final String TYPE_GROUP = "GROUP";
 
-    /**
-     * 持有者类型：USER / GROUP
-     */
-    private String holderType;
+    private @Nullable Long id;
+    private final String holderType;
+    private final String holderId;
+    private final String key;
+    private final boolean value;
+    private final @Nullable String contexts;
+    private final @Nullable Long expiry;
 
-    /**
-     * 持有者 ID
-     */
-    private String holderId;
-
-    /**
-     * 权限键
-     */
-    private String key;
-
-    /**
-     * 权限值：true=允许，false=拒绝
-     */
-    private Boolean value;
-
-    /**
-     * 上下文条件（JSON 格式存储）
-     * <p>
-     * 格式: [{"key":"platform","value":"telegram"}, ...]
-     */
-    private String contexts;
-
-    /**
-     * 过期时间（Unix 时间戳），0 表示永不过期
-     */
-    private Long until;
-
-    /**
-     * 转换为 PermissionNode 对象
-     *
-     * @return PermissionNode 实例
-     */
-    public PermissionNode toDomain() {
-        return new PermissionNode(key, value, Context.fromJson(contexts), until);
+    public PermissionNodeEntity(@NotNull String holderType, @NotNull String holderId,
+                                @NotNull String key, boolean value,
+                                @Nullable String contexts, @Nullable Long expiry) {
+        this.holderType = holderType;
+        this.holderId = holderId;
+        this.key = key;
+        this.value = value;
+        this.contexts = contexts;
+        this.expiry = expiry;
     }
 
-    /**
-     * 从 PermissionNode 对象创建 PermissionNodeEntity
-     *
-     * @param node 权限节点对象
-     * @return PermissionNodeEntity 实例
-     */
-    public static PermissionNodeEntity from(@NotNull PermissionNode node) {
-        return PermissionNodeEntity.builder()
-                .key(node.key())
-                .value(node.value())
-                .contexts(Context.toJson(node.contexts()))
-                .until(node.until())
-                .build();
+    @Nullable
+    public Long getId() {
+        return id;
     }
 
+    public void setId(@Nullable Long id) {
+        this.id = id;
+    }
+
+    @NotNull
+    public String getHolderType() {
+        return holderType;
+    }
+
+    @NotNull
+    public String getHolderId() {
+        return holderId;
+    }
+
+    @NotNull
+    public String getKey() {
+        return key;
+    }
+
+    public boolean getValue() {
+        return value;
+    }
+
+    @Nullable
+    public String getContexts() {
+        return contexts;
+    }
+
+    @Nullable
+    public Long getExpiry() {
+        return expiry;
+    }
+
+    @Override
+    public String toString() {
+        return "PermissionNodeEntity{" +
+                "id=" + id +
+                ", holderType='" + holderType + '\'' +
+                ", holderId='" + holderId + '\'' +
+                ", key='" + key + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

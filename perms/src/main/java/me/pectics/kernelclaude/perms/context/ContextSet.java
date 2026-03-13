@@ -126,11 +126,10 @@ public interface ContextSet extends Iterable<Context> {
      * @return true if any of the key-value pairs exist
      */
     default boolean containsAny(@NotNull String key, @NotNull Iterable<String> values) {
-        for (String value : values) {
-            if (contains(key, value)) {
+        for (String value : values)
+            if (contains(key, value))
                 return true;
-            }
-        }
+
         return false;
     }
 

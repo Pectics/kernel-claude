@@ -26,7 +26,7 @@ public final class ImmutableContextSet extends AbstractContextSet {
     private final ImmutableSetMultimap<String, String> map;
     private final int size;
 
-    private ImmutableContextSet(ImmutableSetMultimap<String, String> map) {
+    private ImmutableContextSet(@NotNull ImmutableSetMultimap<String, String> map) {
         this.map = map;
         this.size = map.size();
     }
@@ -39,16 +39,14 @@ public final class ImmutableContextSet extends AbstractContextSet {
 
     public static @NotNull ImmutableContextSet fromMap(@NotNull Map<String, Set<String>> map) {
         Preconditions.checkNotNull(map, "map");
-        if (map.isEmpty()) {
+        if (map.isEmpty())
             return EMPTY;
-        }
 
         ImmutableSetMultimap.Builder<String, String> builder = ImmutableSetMultimap.builder();
-        for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
-            for (String value : entry.getValue()) {
+        for (Map.Entry<String, Set<String>> entry : map.entrySet())
+            for (String value : entry.getValue())
                 builder.put(entry.getKey(), value);
-            }
-        }
+
         return new ImmutableContextSet(builder.build());
     }
 
@@ -71,27 +69,27 @@ public final class ImmutableContextSet extends AbstractContextSet {
     @Override
     public @NotNull MutableContextSet mutableCopy() {
         MutableContextSet copy = new MutableContextSet();
-        for (Map.Entry<String, String> entry : map.entries()) {
+        for (Map.Entry<String, String> entry : map.entries())
             copy.add(entry.getKey(), entry.getValue());
-        }
+
         return copy;
     }
 
     @Override
     public @NotNull @Unmodifiable Set<Context> toSet() {
         Set<Context> result = new LinkedHashSet<>();
-        for (Map.Entry<String, String> entry : map.entries()) {
+        for (Map.Entry<String, String> entry : map.entries())
             result.add(new ContextImpl(entry.getKey(), entry.getValue()));
-        }
+
         return Collections.unmodifiableSet(result);
     }
 
     @Override
     public @NotNull @Unmodifiable Map<String, Set<String>> asMap() {
         Map<String, Set<String>> result = new LinkedHashMap<>();
-        for (String key : map.keySet()) {
+        for (String key : map.keySet())
             result.put(key, Collections.unmodifiableSet(map.get(key)));
-        }
+
         return Collections.unmodifiableMap(result);
     }
 
@@ -134,20 +132,18 @@ public final class ImmutableContextSet extends AbstractContextSet {
     protected boolean otherContainsAll(@NotNull ContextSet other, @NotNull ContextSatisfyMode mode) {
         return switch (mode) {
             case ALL_VALUE_MATCH_PER_KEY -> {
-                for (Map.Entry<String, String> entry : map.entries()) {
-                    if (!other.contains(entry.getKey(), entry.getValue())) {
+                for (Map.Entry<String, String> entry : map.entries())
+                    if (!other.contains(entry.getKey(), entry.getValue()))
                         yield false;
-                    }
-                }
+
                 yield true;
             }
             case ANY_VALUE_MATCH_PER_KEY -> {
                 // Use other.containsAny for efficiency
-                for (Map.Entry<String, Set<String>> entry : asMap().entrySet()) {
-                    if (!other.containsAny(entry.getKey(), entry.getValue())) {
+                for (Map.Entry<String, Set<String>> entry : asMap().entrySet())
+                    if (!other.containsAny(entry.getKey(), entry.getValue()))
                         yield false;
-                    }
-                }
+
                 yield true;
             }
         };
@@ -176,10 +172,7 @@ public final class ImmutableContextSet extends AbstractContextSet {
         private final ImmutableSetMultimap.Builder<String, String> builder = ImmutableSetMultimap.builder();
 
         public @NotNull Builder add(@NotNull String key, @NotNull String value) {
-            builder.put(
-                    sanitizeKey(key),
-                    sanitizeValue(value)
-            );
+            builder.put(sanitizeKey(key), sanitizeValue(value));
             return this;
         }
 
@@ -192,22 +185,24 @@ public final class ImmutableContextSet extends AbstractContextSet {
             Preconditions.checkNotNull(key, "key");
             Preconditions.checkNotNull(values, "values");
             String sanitizedKey = sanitizeKey(key);
-            for (String value : values) {
+            for (String value : values)
                 builder.put(sanitizedKey, sanitizeValue(value));
-            }
+
             return this;
         }
 
         public @NotNull Builder addAll(@NotNull ContextSet other) {
             Preconditions.checkNotNull(other, "other");
-            for (Context context : other) {
+            for (Context context : other)
                 add(context);
-            }
+
             return this;
         }
 
         public @NotNull ImmutableContextSet build() {
             return new ImmutableContextSet(builder.build());
         }
+
     }
+
 }

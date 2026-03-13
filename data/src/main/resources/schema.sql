@@ -6,12 +6,16 @@
 -- =====================================================
 CREATE TABLE IF NOT EXISTS `kc_user` (
     `platform` VARCHAR(64) NOT NULL COMMENT '平台标识',
-    `user_id` VARCHAR(128) NOT NULL COMMENT '用户ID',
-    `display_name` VARCHAR(256) DEFAULT NULL COMMENT '显示名称',
+    `user_id` VARCHAR(128) NOT NULL COMMENT '用户唯一ID（计算值，如 telegram-a1b2c3d4）',
+    `native_id` VARCHAR(128) NOT NULL COMMENT '平台原生ID',
+    `display_name` VARCHAR(256) DEFAULT NULL COMMENT '显示名称/用户名',
+    `primary_group` VARCHAR(64) NOT NULL DEFAULT 'default' COMMENT '主权限组',
     `created_at` BIGINT NOT NULL COMMENT '创建时间（Unix时间戳）',
     `updated_at` BIGINT NOT NULL COMMENT '更新时间（Unix时间戳）',
-    PRIMARY KEY (`platform`, `user_id`),
-    INDEX `idx_platform` (`platform`)
+    PRIMARY KEY (`user_id`),
+    UNIQUE INDEX `idx_platform_native` (`platform`, `native_id`),
+    INDEX `idx_platform` (`platform`),
+    INDEX `idx_primary_group` (`primary_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
 
 -- =====================================================
@@ -33,11 +37,11 @@ CREATE TABLE IF NOT EXISTS `kc_group` (
 CREATE TABLE IF NOT EXISTS `kc_permission_node` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `holder_type` VARCHAR(16) NOT NULL COMMENT '持有者类型：USER / GROUP',
-    `holder_id` VARCHAR(192) NOT NULL COMMENT '持有者ID（USER: platform:userId, GROUP: groupName）',
+    `holder_id` VARCHAR(192) NOT NULL COMMENT '持有者ID（USER: uniqueId, GROUP: groupName）',
     `permission_key` VARCHAR(256) NOT NULL COMMENT '权限键',
     `permission_value` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '权限值：1=允许，0=拒绝',
     `contexts` TEXT DEFAULT NULL COMMENT '上下文条件（JSON格式）',
-    `until` BIGINT NOT NULL DEFAULT 0 COMMENT '过期时间（Unix时间戳），0表示永不过期',
+    `until` BIGINT DEFAULT NULL COMMENT '过期时间（Unix时间戳），NULL表示永不过期',
     PRIMARY KEY (`id`),
     INDEX `idx_holder` (`holder_type`, `holder_id`),
     INDEX `idx_permission_key` (`permission_key`)
@@ -47,13 +51,12 @@ CREATE TABLE IF NOT EXISTS `kc_permission_node` (
 -- 用户-组关联表
 -- =====================================================
 CREATE TABLE IF NOT EXISTS `kc_user_group` (
-    `platform` VARCHAR(64) NOT NULL COMMENT '平台标识',
-    `user_id` VARCHAR(128) NOT NULL COMMENT '用户ID',
+    `user_id` VARCHAR(128) NOT NULL COMMENT '用户唯一ID',
     `group_name` VARCHAR(64) NOT NULL COMMENT '组名',
-    PRIMARY KEY (`platform`, `user_id`, `group_name`),
+    PRIMARY KEY (`user_id`, `group_name`),
     INDEX `idx_group` (`group_name`),
-    CONSTRAINT `fk_user_group_user` FOREIGN KEY (`platform`, `user_id`)
-        REFERENCES `kc_user` (`platform`, `user_id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_user_group_user` FOREIGN KEY (`user_id`)
+        REFERENCES `kc_user` (`user_id`) ON DELETE CASCADE,
     CONSTRAINT `fk_user_group_group` FOREIGN KEY (`group_name`)
         REFERENCES `kc_group` (`group_name`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户-组关联表';
@@ -83,5 +86,5 @@ ON DUPLICATE KEY UPDATE `display_name` = VALUES(`display_name`);
 
 -- 插入默认用户组
 INSERT INTO `kc_group` (`group_name`, `display_name`, `weight`, `created_at`, `updated_at`)
-VALUES ('user', '普通用户', 0, UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000)
+VALUES ('default', '默认组', 0, UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000)
 ON DUPLICATE KEY UPDATE `display_name` = VALUES(`display_name`);

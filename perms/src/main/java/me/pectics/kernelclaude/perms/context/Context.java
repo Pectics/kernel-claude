@@ -28,14 +28,13 @@ public interface Context extends Comparable<Context> {
      * @return true if valid
      */
     static boolean isValidKey(@Nullable String key) {
-        if (key == null || key.isEmpty()) {
+        if (key == null || key.isEmpty())
             return false;
-        }
-        for (int i = 0, n = key.length(); i < n; i++) {
-            if (key.charAt(i) != ' ') {
+
+        for (int i = 0, n = key.length(); i < n; i++)
+            if (key.charAt(i) != ' ')
                 return true;
-            }
-        }
+
         return false;
     }
 
@@ -66,9 +65,9 @@ public interface Context extends Comparable<Context> {
     @Override
     default int compareTo(@NotNull Context o) {
         int keyCompare = this.getKey().compareTo(o.getKey());
-        if (keyCompare != 0) {
+        if (keyCompare != 0)
             return keyCompare;
-        }
         return this.getValue().compareTo(o.getValue());
     }
+
 }

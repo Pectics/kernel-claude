@@ -15,7 +15,7 @@ final class ContextImpl implements Context {
     private final String value;
     private final int hashCode;
 
-    ContextImpl(String key, String value) {
+    ContextImpl(@NotNull String key, @NotNull String value) {
         this.key = key;
         this.value = value;
         this.hashCode = key.hashCode() ^ value.hashCode();
@@ -47,4 +47,5 @@ final class ContextImpl implements Context {
     public String toString() {
         return this.key + '=' + this.value;
     }
+
 }
