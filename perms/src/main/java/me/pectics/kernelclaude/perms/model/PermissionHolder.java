@@ -22,7 +22,7 @@ import java.util.SortedSet;
  *
  * <p>A permission holder can be a {@link User} or a {@link Group}.</p>
  */
-public interface PermissionHolder {
+public sealed interface PermissionHolder permits Group, User {
 
     /**
      * Gets the unique identifier for this holder.

@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 }
 
 dependencies {
@@ -9,15 +9,17 @@ dependencies {
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.google.guava:guava:33.5.0-jre")
 
-    // MySQL
+    // Database drivers
     runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.xerial:sqlite-jdbc")
 
-    // H2 (for testing)
-    testRuntimeOnly("com.h2database:h2")
-
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
+    // Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test")
+    testRuntimeOnly("org.xerial:sqlite-jdbc")
+    testRuntimeOnly("com.h2database:h2")
 }

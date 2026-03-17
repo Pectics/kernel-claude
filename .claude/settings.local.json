@@ -1,3 +1,5 @@
 {
-  "outputStyle": "Learning"
+  "outputStyle": "default",
+  "spinnerTipsEnabled": true,
+  "prefersReducedMotion": false
 }

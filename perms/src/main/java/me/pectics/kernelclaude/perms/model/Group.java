@@ -11,7 +11,7 @@ import java.util.OptionalInt;
 /**
  * Represents a permission group that can be inherited by users or other groups.
  */
-public interface Group extends PermissionHolder {
+public non-sealed interface Group extends PermissionHolder {
 
     /**
      * Gets the name of this group.

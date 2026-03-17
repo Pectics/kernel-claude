@@ -15,7 +15,7 @@ import java.security.MessageDigest;
 /**
  * Represents a user (player) that holds permission data.
  */
-public interface User extends PermissionHolder {
+public non-sealed interface User extends PermissionHolder {
 
     /**
      * Gets the user ID of this user.
