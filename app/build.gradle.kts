@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     implementation(project(":api"))
-    implementation(project(":events"))
     implementation(project(":perms"))
     implementation(project(":data"))
 
