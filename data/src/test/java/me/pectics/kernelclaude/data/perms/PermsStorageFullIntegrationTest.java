@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -247,7 +248,7 @@ class PermsStorageFullIntegrationTest {
                 new me.pectics.kernelclaude.perms.model.SimpleUser("test", "to-delete");
         storage.saveUser(user).join();
 
-        String userId = user.getUserId();
+        UUID userId = user.getUserId();
         System.out.println("Created user to delete: " + userId);
 
         // Verify it exists
