@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * Entity class representing a user in the database.
  */
@@ -20,7 +22,7 @@ public class UserEntity {
     /**
      * The unique ID (MD5 hash).
      */
-    private @NotNull String userId;
+    private @NotNull UUID userId;
 
     /**
      * The platform (e.g., "telegram", "discord").

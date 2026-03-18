@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -23,10 +24,10 @@ public interface Storage {
     /**
      * Loads a user by unique ID.
      *
-     * @param uniqueId the unique ID
+     * @param userId the unique ID
      * @return the user, or null if not found
      */
-    @NotNull CompletableFuture<@Nullable User> loadUser(@NotNull String uniqueId);
+    @NotNull CompletableFuture<@Nullable User> loadUser(@NotNull UUID userId);
 
     /**
      * Loads a user by platform and native ID.
@@ -55,10 +56,10 @@ public interface Storage {
     /**
      * Deletes a user.
      *
-     * @param uniqueId the unique ID
+     * @param userId the unique ID
      * @return true if deleted
      */
-    @NotNull CompletableFuture<Boolean> deleteUser(@NotNull String uniqueId);
+    @NotNull CompletableFuture<Boolean> deleteUser(@NotNull UUID userId);
 
     // ==================== Group Operations ====================
 

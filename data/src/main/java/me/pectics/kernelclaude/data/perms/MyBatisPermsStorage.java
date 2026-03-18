@@ -5,6 +5,7 @@
 package me.pectics.kernelclaude.data.perms;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import me.pectics.kernelclaude.data.perms.entity.GroupEntity;
 import me.pectics.kernelclaude.data.perms.entity.GroupNodeEntity;
 import me.pectics.kernelclaude.data.perms.entity.UserEntity;
@@ -27,6 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -89,21 +91,21 @@ public class MyBatisPermsStorage implements Storage {
     // ==================== User Operations ====================
 
     @Override
-    public @NotNull CompletableFuture<@Nullable User> loadUser(@NotNull String uniqueId) {
+    public @NotNull CompletableFuture<@Nullable User> loadUser(@NotNull UUID userId) {
         return CompletableFuture.supplyAsync(() -> {
-            UserEntity entity = userMapper.findByUserId(uniqueId);
+            val entity = userMapper.findByUserId(userId);
             if (entity == null)
                 return null;
 
-            SimpleUser user = new SimpleUser(entity.getPlatform(), entity.getNativeId());
+            val user = new SimpleUser(entity.getPlatform(), entity.getNativeId());
             user.setPrimaryGroup(entity.getPrimaryGroup());
             user.setGroupResolver(userGroupResolver);
             user.setPrimaryGroupValidator(primaryGroupValidator);
 
             // Load nodes
-            List<UserNodeEntity> nodeEntities = userNodeMapper.findByUserId(uniqueId);
-            for (UserNodeEntity ne : nodeEntities) {
-                Node node = NodeEntityMapper.toNode(ne);
+            val nodeEntities = userNodeMapper.findByUserId(userId);
+            for (val ne : nodeEntities) {
+                val node = NodeEntityMapper.toNode(ne);
                 if (node != null && !node.hasExpired())
                     user.getData(DataType.NORMAL).add(node);
             }
@@ -139,15 +141,15 @@ public class MyBatisPermsStorage implements Storage {
     @Override
     public @NotNull CompletableFuture<Void> saveUser(@NotNull User user) {
         return CompletableFuture.runAsync(() -> {
-            String userId = user.getUserId();
+            UUID uuid = user.getUserId();
 
             // Delete existing nodes
-            userNodeMapper.deleteByUserId(userId);
+            userNodeMapper.deleteByUserId(uuid);
 
             // Insert new nodes
             List<UserNodeEntity> nodes = user.getData(DataType.NORMAL).toCollection().stream()
                     .filter(node -> !node.hasExpired())
-                    .map(node -> NodeEntityMapper.toUserNodeEntity(userId, node))
+                    .map(node -> NodeEntityMapper.toUserNodeEntity(uuid, node))
                     .toList();
 
             if (!nodes.isEmpty())
@@ -155,7 +157,7 @@ public class MyBatisPermsStorage implements Storage {
 
             // Update or insert user
             UserEntity entity = new UserEntity(
-                    userId,
+                    uuid,
                     user.getPlatform(),
                     user.getNativeId(),
                     user.getPrimaryGroup()
@@ -164,7 +166,7 @@ public class MyBatisPermsStorage implements Storage {
                 userMapper.insert(entity);
             }
 
-            log.debug("Saved user: {}", userId);
+            log.debug("Saved user: {}", uuid);
         }, executor);
     }
 
@@ -177,12 +179,12 @@ public class MyBatisPermsStorage implements Storage {
     }
 
     @Override
-    public @NotNull CompletableFuture<Boolean> deleteUser(@NotNull String uniqueId) {
+    public @NotNull CompletableFuture<Boolean> deleteUser(@NotNull UUID userId) {
         return CompletableFuture.supplyAsync(() -> {
             // Delete nodes first
-            userNodeMapper.deleteByUserId(uniqueId);
+            userNodeMapper.deleteByUserId(userId);
             // Delete user
-            int affected = userMapper.deleteByUserId(uniqueId);
+            int affected = userMapper.deleteByUserId(userId);
             return affected > 0;
         }, executor);
     }
@@ -242,8 +244,11 @@ public class MyBatisPermsStorage implements Storage {
     public @NotNull CompletableFuture<@NotNull Group> createGroup(@NotNull String name) {
         return CompletableFuture.supplyAsync(() -> {
             GroupEntity entity = groupMapper.findByGroupId(name);
-            if (entity != null)
-                return loadGroup(name).join();
+            if (entity != null) {
+                val loaded = loadGroup(name).join();
+                if (loaded != null)
+                    return loaded;
+            }
 
             groupMapper.insert(new GroupEntity(name));
             SimpleGroup group = new SimpleGroup(name);

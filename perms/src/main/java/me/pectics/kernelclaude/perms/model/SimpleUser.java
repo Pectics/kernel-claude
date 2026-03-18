@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ToString(of = {"userId", "platform", "nativeId"})
 public class SimpleUser implements User {
 
-    private final @Getter @NotNull String userId;
+    private final @Getter @NotNull UUID userId;
     private final @Getter @NotNull String platform;
     private final @Getter @NotNull String nativeId;
 

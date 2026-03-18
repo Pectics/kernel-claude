@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 /**
  * Entity class representing a user's permission node in the database.
  */
@@ -25,7 +27,7 @@ public class UserNodeEntity {
     /**
      * The user ID this node belongs to.
      */
-    private @NotNull String userId;
+    private @NotNull UUID userId;
 
     /**
      * The node key (permission, inheritance, meta, etc.).

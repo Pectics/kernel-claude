@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Utility class for mapping between Node entities and domain Node objects.
@@ -57,7 +58,7 @@ public final class NodeEntityMapper {
      * @param node  the node
      * @return the entity
      */
-    public static @NotNull UserNodeEntity toUserNodeEntity(@NotNull String userId, @NotNull Node node) {
+    public static @NotNull UserNodeEntity toUserNodeEntity(@NotNull UUID userId, @NotNull Node node) {
         return new UserNodeEntity(
                 null,
                 userId,

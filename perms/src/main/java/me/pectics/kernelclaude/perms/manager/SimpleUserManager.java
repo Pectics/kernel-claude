@@ -12,6 +12,7 @@ import me.pectics.kernelclaude.perms.storage.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,10 +25,10 @@ public class SimpleUserManager implements UserManager {
     private final GroupManager groupManager;
 
     // Cache by unique ID
-    private final ConcurrentHashMap<String, User> userCacheById = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, User> userCacheById = new ConcurrentHashMap<>();
 
     // Cache by platform:nativeId for quick lookup
-    private final ConcurrentHashMap<String, String> idMapping = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, UUID> idMapping = new ConcurrentHashMap<>();
 
     public SimpleUserManager(@NotNull Storage storage, @NotNull GroupManager groupManager) {
         this.storage = storage;
@@ -36,10 +37,10 @@ public class SimpleUserManager implements UserManager {
 
     @Override
     public @NotNull CompletableFuture<@Nullable User> loadUser(@NotNull String platform, @NotNull String nativeId) {
-        String uniqueId = User.computeId(platform, nativeId);
+        UUID uuid = User.computeId(platform, nativeId);
 
         // Check cache first
-        User cached = userCacheById.get(uniqueId);
+        User cached = userCacheById.get(uuid);
         if (cached != null)
             return CompletableFuture.completedFuture(cached);
 

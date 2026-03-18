@@ -6,11 +6,10 @@ package me.pectics.kernelclaude.perms.model;
 
 import lombok.SneakyThrows;
 import lombok.val;
+import me.pectics.kernelclaude.uuid.UUIDGenerator;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import java.util.UUID;
 
 /**
  * Represents a user (player) that holds permission data.
@@ -22,7 +21,7 @@ public non-sealed interface User extends PermissionHolder {
      *
      * @return the user ID
      */
-    @NotNull String getUserId();
+    @NotNull UUID getUserId();
 
     /**
      * Gets the platform this user belongs to.
@@ -63,7 +62,7 @@ public non-sealed interface User extends PermissionHolder {
      */
     @Override
     default @NotNull String getIdentifier() {
-        return getUserId();
+        return getUserId().toString();
     }
 
     /**
@@ -74,15 +73,9 @@ public non-sealed interface User extends PermissionHolder {
      * @return a unique ID
      */
     @SneakyThrows
-    static @NotNull String computeId(@NotNull String platform, @NotNull String nativeId) {
-        val input = "?platform=" + platform + "&native_id=" + nativeId;
-        // Use md5 hash for better distribution
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
-        StringBuilder hex = new StringBuilder(digest.length * 2);
-        for (byte b : digest)
-            hex.append(String.format("%02x", b));
-        return hex.toString();
+    static @NotNull UUID computeId(@NotNull String platform, @NotNull String nativeId) {
+        val input = "user_id?platform=" + platform + "&native_id=" + nativeId;
+        return UUIDGenerator.generate(input);
     }
 
 }
