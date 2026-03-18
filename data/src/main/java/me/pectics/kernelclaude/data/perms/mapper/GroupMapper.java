@@ -27,7 +27,10 @@ public interface GroupMapper {
      * @param groupId the group ID
      * @return the group entity, or null if not found
      */
-    @Select("SELECT group_id FROM kc_groups WHERE group_id = #{groupId}")
+    @Select("""
+    SELECT group_id FROM kc_groups
+    WHERE group_id = #{groupId}
+    """)
     @Nullable GroupEntity findByGroupId(@Param("groupId") @NotNull String groupId);
 
     /**
@@ -35,7 +38,9 @@ public interface GroupMapper {
      *
      * @return list of group IDs
      */
-    @Select("SELECT group_id FROM kc_groups")
+    @Select("""
+    SELECT group_id FROM kc_groups
+    """)
     @NotNull List<String> findAllGroupIds();
 
     /**
@@ -44,7 +49,12 @@ public interface GroupMapper {
      * @param entity the group entity
      * @return affected rows
      */
-    @Insert("INSERT INTO kc_groups (group_id) VALUES (#{entity.groupId})")
+    @Insert("""
+    INSERT INTO kc_groups
+        (group_id)
+    VALUES
+        (#{entity.groupId})
+    """)
     int insert(@Param("entity") GroupEntity entity);
 
     /**
@@ -53,7 +63,10 @@ public interface GroupMapper {
      * @param groupId the group ID
      * @return affected rows
      */
-    @Delete("DELETE FROM kc_groups WHERE group_id = #{groupId}")
+    @Delete("""
+    DELETE FROM kc_groups
+    WHERE group_id = #{groupId}
+    """)
     int deleteByGroupId(@Param("groupId") @NotNull String groupId);
 
 }

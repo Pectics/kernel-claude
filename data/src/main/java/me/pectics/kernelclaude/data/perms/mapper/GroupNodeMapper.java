@@ -26,7 +26,10 @@ public interface GroupNodeMapper {
      * @param groupId the group ID
      * @return list of group node entities
      */
-    @Select("SELECT id, group_id, node_key, node_value, expire_at, contexts FROM kc_group_nodes WHERE group_id = #{groupId}")
+    @Select("""
+    SELECT id, group_id, node_key, node_value, expire_at, contexts FROM kc_group_nodes
+    WHERE group_id = #{groupId}
+    """)
     @NotNull List<GroupNodeEntity> findByGroupId(@Param("groupId") @NotNull String groupId);
 
     /**
@@ -35,7 +38,10 @@ public interface GroupNodeMapper {
      * @param groupId the group ID
      * @return affected rows
      */
-    @Delete("DELETE FROM kc_group_nodes WHERE group_id = #{groupId}")
+    @Delete("""
+    DELETE FROM kc_group_nodes
+    WHERE group_id = #{groupId}
+    """)
     int deleteByGroupId(@Param("groupId") @NotNull String groupId);
 
     /**
@@ -44,7 +50,12 @@ public interface GroupNodeMapper {
      * @param entity the node entity
      * @return affected rows
      */
-    @Insert("INSERT INTO kc_group_nodes (group_id, node_key, node_value, expire_at, contexts) VALUES (#{entity.groupId}, #{entity.nodeKey}, #{entity.nodeValue}, #{entity.expireAt}, #{entity.contexts})")
+    @Insert("""
+    INSERT INTO kc_group_nodes
+        (group_id, node_key, node_value, expire_at, contexts)
+    VALUES
+        (#{entity.groupId}, #{entity.nodeKey}, #{entity.nodeValue}, #{entity.expireAt}, #{entity.contexts})
+    """)
     int insert(@Param("entity") GroupNodeEntity entity);
 
     /**
@@ -52,12 +63,16 @@ public interface GroupNodeMapper {
      *
      * @param entities the node entities
      */
-    @Insert("<script>" +
-            "INSERT INTO kc_group_nodes (group_id, node_key, node_value, expire_at, contexts) VALUES " +
-            "<foreach collection='entities' item='e' separator=','>" +
-            "(#{e.groupId}, #{e.nodeKey}, #{e.nodeValue}, #{e.expireAt}, #{e.contexts})" +
-            "</foreach>" +
-            "</script>")
+    @Insert("""
+    <script>
+    INSERT INTO kc_group_nodes
+        (group_id, node_key, node_value, expire_at, contexts)
+    VALUES
+    <foreach collection='entities' item='e' separator=','>
+        (#{e.groupId}, #{e.nodeKey}, #{e.nodeValue}, #{e.expireAt}, #{e.contexts})
+    </foreach>
+    </script>
+    """)
     void batchInsert(@Param("entities") @NotNull List<GroupNodeEntity> entities);
 
 }
